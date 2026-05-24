@@ -7,6 +7,9 @@ import { AdminTopNav } from '@/components/admin/AdminTopNav'
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin/dashboard': 'Dashboard',
+  '/admin/crm/contacts': 'CRM — Contacts',
+  '/admin/crm/deals': 'CRM — Deals',
+  '/admin/crm': 'CRM',
   '/admin/clients': 'Clients',
   '/admin/tasks': 'Tasks',
   '/admin/rooms': 'Room Management',
