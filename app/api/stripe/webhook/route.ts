@@ -34,6 +34,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 })
   }
 }
-
-// Disable body parsing — we need the raw body for signature verification
-export const config = { api: { bodyParser: false } }
