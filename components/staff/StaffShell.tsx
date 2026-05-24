@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import { NotificationBell } from '@/components/shared/NotificationBell'
+import { useNotifications } from '@/hooks/useNotifications'
 
 interface NavItem {
   href: string
@@ -234,6 +235,7 @@ export function StaffShell({ children, profile }: StaffShellProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const pathname = usePathname()
   const pageTitle = getPageTitle(pathname)
+  const { notifications, unreadCount, markAllRead, loading: notifLoading } = useNotifications()
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -273,7 +275,19 @@ export function StaffShell({ children, profile }: StaffShellProps) {
             <Menu className="w-4 h-4" />
           </Button>
           <h1 className="text-sm font-semibold text-foreground flex-1">{pageTitle}</h1>
-          <NotificationBell userId={profile.id} />
+          <NotificationBell
+            notifications={notifications.map((n) => ({
+              id: n.id,
+              type: 'info' as const,
+              title: n.title,
+              message: n.message,
+              read: n.is_read ?? false,
+              created_at: n.created_at,
+            }))}
+            unreadCount={unreadCount}
+            onMarkAllRead={markAllRead}
+            loading={notifLoading}
+          />
         </header>
 
         <main className="flex-1 overflow-y-auto">
