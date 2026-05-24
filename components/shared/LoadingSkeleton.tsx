@@ -1,6 +1,17 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
+export function LoadingSkeleton() {
+  return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-5/6" />
+    </div>
+  )
+}
+
 export function TableSkeleton({ rows = 5, cols = 5 }: { rows?: number; cols?: number }) {
   return (
     <div className="w-full">

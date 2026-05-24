@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props) {
     .select('full_name')
     .eq('id', params.id)
     .single()
-  return { title: data?.full_name ?? 'Client Detail' }
+  return { title: (data as { full_name: string } | null)?.full_name ?? 'Client Detail' }
 }
 
 export default async function ClientDetailPage({ params }: Props) {
