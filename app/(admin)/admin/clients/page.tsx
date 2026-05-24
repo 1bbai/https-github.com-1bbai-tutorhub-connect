@@ -21,12 +21,15 @@ export default async function ClientsPage() {
     .order('created_at', { ascending: false })
 
   // Flatten single-element arrays from supabase join
-  const normalizedClients = (clients ?? []).map((c) => ({
-    ...c,
-    subscription: Array.isArray(c.subscription)
-      ? (c.subscription[0] ?? null)
-      : c.subscription,
-  })) as ClientWithSubscription[]
+  const normalizedClients = (clients ?? []).map((c) => {
+    const row = c as Record<string, unknown>
+    return {
+      ...row,
+      subscription: Array.isArray(row.subscription)
+        ? (row.subscription[0] ?? null)
+        : row.subscription,
+    }
+  }) as ClientWithSubscription[]
 
   return <ClientList clients={normalizedClients} />
 }
