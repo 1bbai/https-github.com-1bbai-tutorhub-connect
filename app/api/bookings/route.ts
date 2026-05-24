@@ -25,24 +25,6 @@ export async function POST(request: NextRequest) {
     const admin = createAdminClient()
 
     // Check availability — no overlapping confirmed bookings for this room
-    const { data: overlapping, error: overlapError } = await admin
-      .from('room_bookings')
-      .select('id')
-      .eq('room_id', roomId)
-      .eq('status', 'confirmed')
-      .or(`start_time.lt.${endTime},end_time.gt.${startTime}`)
-
-    if (overlapError) {
-      return NextResponse.json({ error: 'Failed to check availability' }, { status: 500 })
-    }
-
-    // Filter to actual overlaps (Supabase OR logic above fetches too broadly)
-    const conflicts = (overlapping ?? []).filter((b) => {
-      // actual overlap: existing.start < new.end AND existing.end > new.start
-      return true // the SQL OR already covers this correctly when combined properly
-    })
-
-    // More precise overlap check
     const { data: precise, error: preciseErr } = await admin
       .from('room_bookings')
       .select('id')

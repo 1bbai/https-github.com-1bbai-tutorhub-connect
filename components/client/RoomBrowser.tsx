@@ -19,10 +19,9 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { format, addHours, parseISO, isBefore, startOfDay } from 'date-fns'
+import { format, parseISO, isBefore, startOfDay } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
