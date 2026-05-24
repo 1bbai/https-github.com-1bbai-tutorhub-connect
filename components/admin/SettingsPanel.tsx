@@ -234,7 +234,7 @@ export function SettingsPanel({ integrationStatus, businessProfile: initialProfi
               <MaskedInput
                 label="API Key"
                 name="sendgrid_api_key"
-                value={process.env.NEXT_PUBLIC_SENDGRID_CONFIGURED === 'true' ? '••••••••••••••••••••••••••' : ''}
+                value={integrationStatus.sendgrid ? '••••••••••••••••••••••••••' : ''}
                 placeholder="SG.xxxxxxxxxxxxxxxx"
               />
               <MaskedInput

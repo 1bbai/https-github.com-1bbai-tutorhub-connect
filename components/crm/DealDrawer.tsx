@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import {
   Pencil,
@@ -97,7 +97,7 @@ export function DealDrawer({ deal, stages, staffList, onClose, onUpdate }: DealD
   const [deleting, setDeleting] = useState(false)
 
   // Load activities on first render
-  useState(() => {
+  useEffect(() => {
     async function load() {
       try {
         const res = await fetch(`/api/crm/activities?contactId=${deal.contact_id}&dealId=${deal.id}&limit=5`)
@@ -112,7 +112,8 @@ export function DealDrawer({ deal, stages, staffList, onClose, onUpdate }: DealD
       }
     }
     load()
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deal.id])
 
   async function handleSave() {
     setSaving(true)
