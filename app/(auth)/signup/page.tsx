@@ -55,48 +55,40 @@ export default function SignupPage() {
   })
 
   const onSubmit = async (values: SignupFormValues) => {
-    const full_name = `${values.first_name.trim()} ${values.last_name.trim()}`
-
-    const { data, error } = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-      options: {
-        data: { full_name, role: 'client' },
-      },
+    // Step 1 — create the account server-side (uses admin client, bypasses RLS)
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: values.first_name,
+        last_name: values.last_name,
+        email: values.email,
+        password: values.password,
+        phone: values.phone,
+        company_name: values.company_name,
+      }),
     })
 
-    if (error) {
-      toast.error(error.message)
+    const json = await res.json()
+
+    if (!res.ok) {
+      toast.error(json.error ?? 'Something went wrong. Please try again.')
       return
     }
 
-    if (!data.user) {
-      toast.error('Something went wrong. Please try again.')
+    // Step 2 — sign the user in immediately
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    })
+
+    if (signInError) {
+      toast.error('Account created but sign-in failed. Please go to the login page.')
       return
     }
 
-    // Update phone + company on the profile row the trigger just created
-    const { error: profileError } = await supabase
-      .from('users')
-      .update({
-        phone: values.phone,
-        company_name: values.company_name?.trim() || null,
-      })
-      .eq('id', data.user.id)
-
-    if (profileError) {
-      // Non-fatal: user exists, profile partially set
-      console.error('Profile update failed:', profileError.message)
-    }
-
-    if (data.session) {
-      // Email confirmation is disabled — user is immediately active
-      toast.success('Account created! Welcome to Markham Office Services.')
-      window.location.href = '/client/home'
-    } else {
-      // Email confirmation is enabled — ask them to check their inbox
-      toast.success('Almost there! Check your email to confirm your account.')
-    }
+    toast.success('Account created! Welcome to Markham Office Services.')
+    window.location.href = '/client/home'
   }
 
   return (
