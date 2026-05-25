@@ -65,13 +65,13 @@ const staffNav: NavItem[] = [
 ]
 
 const clientNav: NavItem[] = [
-  { label: 'Home', href: '/home', icon: Home },
-  { label: 'My Plan', href: '/plan', icon: FileText },
-  { label: 'Billing', href: '/billing', icon: CreditCard },
-  { label: 'Rooms', href: '/rooms', icon: DoorOpen },
-  { label: 'Services', href: '/services', icon: Wrench },
-  { label: 'Support', href: '/support', icon: HeadphonesIcon },
-  { label: 'Profile', href: '/profile', icon: UserCircle },
+  { label: 'Home', href: '/client/home', icon: Home },
+  { label: 'My Plan', href: '/client/plan', icon: FileText },
+  { label: 'Billing', href: '/client/billing', icon: CreditCard },
+  { label: 'Rooms', href: '/client/rooms', icon: DoorOpen },
+  { label: 'Services', href: '/client/services', icon: Wrench },
+  { label: 'Support', href: '/client/support', icon: HeadphonesIcon },
+  { label: 'Profile', href: '/client/profile', icon: UserCircle },
 ]
 
 function getNavItems(role: string): NavItem[] {
