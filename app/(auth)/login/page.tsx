@@ -84,8 +84,7 @@ export default function LoginPage() {
     const destination = DASHBOARD_MAP[role] ?? DASHBOARD_MAP.client
 
     toast.success('Welcome back!')
-    router.push(destination)
-    router.refresh()
+    window.location.href = destination
   }
 
   return (
