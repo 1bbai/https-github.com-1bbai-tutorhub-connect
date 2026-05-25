@@ -9,6 +9,7 @@ const DASHBOARD_MAP: Record<string, string> = {
 
 const PUBLIC_ROUTES = [
   '/login',
+  '/signup',
   '/forgot-password',
   '/reset-password',
   '/accept-invite',

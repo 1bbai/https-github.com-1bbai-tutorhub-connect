@@ -194,6 +194,16 @@ export default function LoginPage() {
                 'Sign in'
               )}
             </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              Don&apos;t have an account?{' '}
+              <Link
+                href="/signup"
+                className="text-primary underline-offset-4 hover:underline transition-colors"
+              >
+                Sign up
+              </Link>
+            </p>
           </CardFooter>
         </form>
       </Card>
