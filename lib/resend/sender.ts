@@ -90,7 +90,7 @@ export async function sendBookingConfirmationEmail(params: {
         <tr><td style="padding:4px 12px 4px 0;color:#6b7280">Room</td><td><strong>${params.roomName}</strong></td></tr>
         <tr><td style="padding:4px 12px 4px 0;color:#6b7280">Start</td><td>${params.startTime}</td></tr>
         <tr><td style="padding:4px 12px 4px 0;color:#6b7280">End</td><td>${params.endTime}</td></tr>
-        <tr><td style="padding:4px 12px 4px 0;color:#6b7280">Credits used</td><td>${params.creditsUsed}</td></tr>
+        <tr><td style="padding:4px 12px 4px 0;color:#6b7280">Meeting room credits used</td><td>${params.creditsUsed} (1 credit = 1 hr)</td></tr>
       </table>
       <p>To cancel or manage your booking, visit your <a href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://my.markhamoffice.com'}/client/rooms">client portal</a>.</p>
       <p>— Markham Office Services</p>

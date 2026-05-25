@@ -117,7 +117,7 @@ function RoomCard({
           </span>
           <span className="flex items-center gap-1">
             <Zap className="w-3 h-3" />
-            {room.credits_per_hour ?? '—'} credits/hr
+            {room.credits_per_hour ?? '—'} hr credit/hr
           </span>
         </div>
 
@@ -462,7 +462,7 @@ export function RoomManagement({ rooms, bookings }: RoomManagementProps) {
                 />
               </div>
               <div>
-                <Label>Credits / Hour</Label>
+                <Label>Meeting Room Credits / Hour</Label>
                 <Input
                   type="number"
                   className="mt-1.5"

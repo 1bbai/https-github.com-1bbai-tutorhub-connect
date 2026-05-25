@@ -30,7 +30,7 @@ const NOTIFICATION_EVENTS: NotificationEvent[] = [
   { key: 'payment_success', label: 'Payment Successful', hasEmail: true, hasSms: false },
   { key: 'payment_failed', label: 'Payment Failed', hasEmail: true, hasSms: true },
   { key: 'task_updated', label: 'Support Request Updated', hasEmail: true, hasSms: false },
-  { key: 'low_credits', label: 'Low Credits', hasEmail: true, hasSms: true },
+  { key: 'low_credits', label: 'Low Meeting Room Credits', hasEmail: true, hasSms: true },
 ]
 
 function getPref(

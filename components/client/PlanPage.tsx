@@ -129,7 +129,7 @@ export function PlanPage({ subscription, allPlans, clientId }: PlanPageProps) {
                 )}
                 {currentPlan.meeting_room_credits_per_month !== null && (
                   <span>
-                    Credits: <strong className="text-foreground">{currentPlan.meeting_room_credits_per_month} / month</strong>
+                    Meeting room credits: <strong className="text-foreground">{currentPlan.meeting_room_credits_per_month} / month</strong> · 1 credit = 1 hr
                   </span>
                 )}
               </div>

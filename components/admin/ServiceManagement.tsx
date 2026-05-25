@@ -182,7 +182,7 @@ function PlanDialog({ open, onOpenChange, plan, onSaved }: PlanDialogProps) {
               />
             </div>
             <div>
-              <Label>Room Credits / Month</Label>
+              <Label>Meeting Room Credits / Month</Label>
               <Input
                 type="number"
                 value={form.meeting_room_credits_per_month}
@@ -526,7 +526,7 @@ export function ServiceManagement({ plans: initialPlans, services: initialServic
                       <span className="font-medium text-foreground">
                         {plan.meeting_room_credits_per_month ?? 0}
                       </span>{' '}
-                      credits/mo
+                      meeting room credits/mo
                     </div>
                     <div>
                       <span className="font-medium text-foreground">

@@ -174,15 +174,15 @@ export function ClientDetail({
       })
       const json = await res.json()
       if (!res.ok) {
-        toast.error(json.error ?? 'Failed to adjust credits')
+        toast.error(json.error ?? 'Failed to adjust meeting room credits')
         return
       }
-      toast.success(`${type === 'credit' ? 'Added' : 'Deducted'} ${amount} credit${amount !== 1 ? 's' : ''}`)
+      toast.success(`${type === 'credit' ? 'Added' : 'Deducted'} ${amount} meeting room credit${amount !== 1 ? 's' : ''}`)
       setCreditAmount('')
       setCreditReason('')
       router.refresh()
     } catch {
-      toast.error('Failed to adjust credits')
+      toast.error('Failed to adjust meeting room credits')
     } finally {
       setCreditLoading(false)
     }
@@ -417,10 +417,10 @@ export function ClientDetail({
             </Card>
           )}
 
-          {/* Credits card */}
+          {/* Meeting Room Credits card */}
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-semibold">Credits</CardTitle>
+              <CardTitle className="text-sm font-semibold">Meeting Room Credits</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-center">
@@ -428,12 +428,15 @@ export function ClientDetail({
                   {subscription?.credits_remaining ?? 0}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  credits remaining
+                  meeting room credits remaining
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  1 credit = 1 hour
                 </p>
               </div>
               <Separator />
               <div className="space-y-2">
-                <Label className="text-xs">Adjust Credits</Label>
+                <Label className="text-xs">Adjust Meeting Room Credits</Label>
                 <Input
                   type="number"
                   placeholder="Amount"
@@ -531,7 +534,7 @@ export function ClientDetail({
                 Tasks ({tasks.length})
               </TabsTrigger>
               <TabsTrigger value="credits">
-                Credits ({creditHistory.length})
+                Room Credits ({creditHistory.length})
               </TabsTrigger>
             </TabsList>
 
@@ -606,7 +609,7 @@ export function ClientDetail({
                               <TableHead>Room</TableHead>
                               <TableHead>Date</TableHead>
                               <TableHead>Duration</TableHead>
-                              <TableHead>Credits</TableHead>
+                              <TableHead>Credits Used</TableHead>
                               <TableHead>Status</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -660,7 +663,7 @@ export function ClientDetail({
                               <TableHead>Room</TableHead>
                               <TableHead>Date</TableHead>
                               <TableHead>Duration</TableHead>
-                              <TableHead>Credits</TableHead>
+                              <TableHead>Credits Used</TableHead>
                               <TableHead>Status</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -841,7 +844,7 @@ export function ClientDetail({
                 <CardContent className="p-0">
                   {creditHistory.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
-                      No credit history yet
+                      No meeting room credit history yet
                     </p>
                   ) : (
                     <Table>

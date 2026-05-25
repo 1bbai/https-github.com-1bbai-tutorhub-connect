@@ -136,11 +136,11 @@ export function PortalDashboard({
             <div className="flex items-end gap-2">
               <span className="text-5xl font-bold text-primary">{creditsRemaining}</span>
               <span className="text-muted-foreground pb-1.5 text-sm">
-                credits remaining
+                meeting room credits remaining
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
-              {plan.name} — {totalCredits} credits per month
+              {plan.name} — {totalCredits} meeting room credits/month · 1 credit = 1 hr
             </p>
             <Progress value={creditProgress} className="h-2" />
             <p className="text-xs text-muted-foreground">
@@ -269,7 +269,7 @@ export function PortalDashboard({
                         {booking.room?.name ?? 'Meeting Room'}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {formatDateTime(booking.start_time)} &middot; {booking.duration_hours}h &middot; {booking.credits_used} credits
+                        {formatDateTime(booking.start_time)} &middot; {booking.duration_hours}h &middot; {booking.credits_used} meeting room credit{booking.credits_used !== 1 ? 's' : ''}
                       </p>
                     </div>
                   </div>
