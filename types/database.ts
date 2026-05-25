@@ -255,6 +255,7 @@ export interface CreditLedgerEntry {
   amount: number
   reason: string
   balance_after: number
+  performed_by: string | null
   created_at: string
 }
 
@@ -514,6 +515,7 @@ export interface CreditLedgerEntryInsert {
   amount: number
   reason: string
   balance_after: number
+  performed_by?: string | null
   created_at?: string
 }
 

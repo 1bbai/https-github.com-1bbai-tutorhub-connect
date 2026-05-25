@@ -78,11 +78,10 @@ export default async function ClientDetailPage({ params }: Props) {
 
     supabase
       .from('credit_ledger')
-      .select('*')
+      .select('*, performer:users!performed_by(full_name)')
       .eq('client_id', params.id)
       .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
+      .limit(50),
   ])
 
   if (!client) notFound()
@@ -96,7 +95,7 @@ export default async function ClientDetailPage({ params }: Props) {
       invoices={invoices ?? []}
       tasks={tasks ?? []}
       crmContact={crmContact}
-      latestCredit={credits}
+      creditHistory={credits ?? []}
     />
   )
 }

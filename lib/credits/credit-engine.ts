@@ -28,6 +28,7 @@ export async function debitCredits(params: {
   amount: number
   reason: string
   bookingId?: string
+  performedBy?: string
 }): Promise<{ success: boolean; newBalance: number; error?: string }> {
   const supabase = createAdminClient()
 
@@ -78,6 +79,7 @@ export async function debitCredits(params: {
     amount: params.amount,
     reason: params.reason,
     balance_after: newBalance,
+    performed_by: params.performedBy ?? null,
   })
 
   if (ledgerError) {
@@ -106,6 +108,7 @@ export async function creditCredits(params: {
   amount: number
   reason: string
   bookingId?: string
+  performedBy?: string
 }): Promise<{ success: boolean; newBalance: number }> {
   const supabase = createAdminClient()
 
@@ -143,6 +146,7 @@ export async function creditCredits(params: {
     amount: params.amount,
     reason: params.reason,
     balance_after: newBalance,
+    performed_by: params.performedBy ?? null,
   })
 
   if (ledgerError) {

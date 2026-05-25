@@ -51,10 +51,10 @@ export async function POST(
 
   try {
     if (type === 'credit') {
-      const result = await creditCredits({ clientId, amount, reason })
+      const result = await creditCredits({ clientId, amount, reason, performedBy: user.id })
       return NextResponse.json({ success: true, newBalance: result.newBalance })
     } else {
-      const result = await debitCredits({ clientId, amount, reason })
+      const result = await debitCredits({ clientId, amount, reason, performedBy: user.id })
       if (!result.success) {
         return NextResponse.json({ error: result.error }, { status: 400 })
       }
