@@ -13,6 +13,36 @@ function getResend(): Resend | null {
   return new Resend(key)
 }
 
+// ─── Welcome / registration ───────────────────────────────────────────────────
+
+export async function sendWelcomeEmail(params: {
+  to: string
+  fullName: string
+}) {
+  const resend = getResend()
+  if (!resend) return
+
+  const portalUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://my.markhamoffice.com'}/client/home`
+
+  await resend.emails.send({
+    from,
+    to: params.to,
+    subject: 'Welcome to Markham Office Services',
+    html: `
+      <p>Hi ${params.fullName},</p>
+      <p>Your Markham Office Services account has been created and is ready to use.</p>
+      <p>
+        <a href="${portalUrl}" style="background:#2563eb;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block">
+          Access your client portal
+        </a>
+      </p>
+      <p>From the portal you can book meeting rooms, view your plan, check invoices, and request support.</p>
+      <p>If you have any questions, contact us at <a href="mailto:support@markhamoffice.com">support@markhamoffice.com</a>.</p>
+      <p>— Markham Office Services</p>
+    `,
+  })
+}
+
 // ─── Invite ───────────────────────────────────────────────────────────────────
 
 export async function sendInviteEmail(params: {
