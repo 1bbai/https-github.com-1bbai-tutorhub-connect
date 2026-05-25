@@ -1,16 +1,36 @@
 import { Resend } from 'resend'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'no-reply@markhamoffice.com'
-const FROM_NAME  = process.env.RESEND_FROM_NAME  ?? 'Markham Office Services'
-const from = `${FROM_NAME} <${FROM_EMAIL}>`
+async function getResendConfig(): Promise<{ resend: Resend; from: string } | null> {
+  // Try DB settings first, fall back to env vars
+  let apiKey = process.env.RESEND_API_KEY ?? ''
+  let fromEmail = process.env.RESEND_FROM_EMAIL ?? 'no-reply@markhamoffice.com'
+  let fromName = process.env.RESEND_FROM_NAME ?? 'Markham Office Services'
 
-function getResend(): Resend | null {
-  const key = process.env.RESEND_API_KEY
-  if (!key) {
-    console.warn('[resend] RESEND_API_KEY not configured — skipping email send')
+  try {
+    const admin = createAdminClient()
+    const { data: rows } = await admin
+      .from('app_settings')
+      .select('key, value')
+      .in('key', ['resend_api_key', 'resend_from_email', 'resend_from_name'])
+    for (const row of rows ?? []) {
+      if (row.key === 'resend_api_key'    && row.value) apiKey    = row.value
+      if (row.key === 'resend_from_email' && row.value) fromEmail = row.value
+      if (row.key === 'resend_from_name'  && row.value) fromName  = row.value
+    }
+  } catch {
+    // DB unavailable — use env vars only
+  }
+
+  if (!apiKey) {
+    console.warn('[resend] No API key configured — skipping email send')
     return null
   }
-  return new Resend(key)
+
+  return {
+    resend: new Resend(apiKey),
+    from: `${fromName} <${fromEmail}>`,
+  }
 }
 
 // ─── Welcome / registration ───────────────────────────────────────────────────
@@ -19,13 +39,13 @@ export async function sendWelcomeEmail(params: {
   to: string
   fullName: string
 }) {
-  const resend = getResend()
-  if (!resend) return
+  const cfg = await getResendConfig()
+  if (!cfg) return
 
   const portalUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://my.markhamoffice.com'}/client/home`
 
-  await resend.emails.send({
-    from,
+  await cfg.resend.emails.send({
+    from: cfg.from,
     to: params.to,
     subject: 'Welcome to Markham Office Services',
     html: `
@@ -50,11 +70,11 @@ export async function sendInviteEmail(params: {
   fullName: string
   inviteUrl: string
 }) {
-  const resend = getResend()
-  if (!resend) return
+  const cfg = await getResendConfig()
+  if (!cfg) return
 
-  await resend.emails.send({
-    from,
+  await cfg.resend.emails.send({
+    from: cfg.from,
     to: params.to,
     subject: "You've been invited to Markham Office Services",
     html: `
@@ -75,15 +95,15 @@ export async function sendInvoicePaidEmail(params: {
   amount: string
   invoicePdfUrl?: string
 }) {
-  const resend = getResend()
-  if (!resend) return
+  const cfg = await getResendConfig()
+  if (!cfg) return
 
   const pdfLine = params.invoicePdfUrl
     ? `<p><a href="${params.invoicePdfUrl}">Download your invoice (PDF)</a></p>`
     : ''
 
-  await resend.emails.send({
-    from,
+  await cfg.resend.emails.send({
+    from: cfg.from,
     to: params.to,
     subject: `Payment received — ${params.amount}`,
     html: `
@@ -106,11 +126,11 @@ export async function sendBookingConfirmationEmail(params: {
   endTime: string
   creditsUsed: number
 }) {
-  const resend = getResend()
-  if (!resend) return
+  const cfg = await getResendConfig()
+  if (!cfg) return
 
-  await resend.emails.send({
-    from,
+  await cfg.resend.emails.send({
+    from: cfg.from,
     to: params.to,
     subject: `Booking confirmed — ${params.roomName}`,
     html: `
@@ -135,13 +155,13 @@ export async function sendLowCreditsEmail(params: {
   fullName: string
   creditsRemaining: number
 }) {
-  const resend = getResend()
-  if (!resend) return
+  const cfg = await getResendConfig()
+  if (!cfg) return
 
   const upgradeUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://my.markhamoffice.com'}/client/plan`
 
-  await resend.emails.send({
-    from,
+  await cfg.resend.emails.send({
+    from: cfg.from,
     to: params.to,
     subject: 'Your meeting room credits are running low',
     html: `

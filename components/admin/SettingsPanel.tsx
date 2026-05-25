@@ -1,15 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import {
-  Eye,
-  EyeOff,
-  Copy,
-  Check,
-  CheckCircle2,
-  XCircle,
-} from 'lucide-react'
+import { Eye, EyeOff, CheckCircle2, XCircle, Save, Loader2 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,12 +30,6 @@ import { PageHeader } from '@/components/shared/PageHeader'
 // Types
 // ─────────────────────────────────────────────
 
-interface IntegrationStatus {
-  sendgrid: boolean
-  twilio: boolean
-  stripe: boolean
-}
-
 interface BusinessProfile {
   business_name: string
   logo_url: string
@@ -55,84 +42,57 @@ interface BusinessProfile {
 }
 
 interface SettingsPanelProps {
-  integrationStatus: IntegrationStatus
   businessProfile: BusinessProfile
 }
 
 // ─────────────────────────────────────────────
-// MaskedInput
-// ─────────────────────────────────────────────
-
-function MaskedInput({
-  label,
-  value,
-  name,
-  placeholder,
-}: {
-  label: string
-  value: string
-  name: string
-  placeholder?: string
-}) {
-  const [show, setShow] = useState(false)
-  const [copied, setCopied] = useState(false)
-
-  function handleCopy() {
-    if (!value) return
-    navigator.clipboard.writeText(value)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <div>
-      <Label htmlFor={name}>{label}</Label>
-      <div className="relative mt-1 flex items-center gap-2">
-        <div className="relative flex-1">
-          <Input
-            id={name}
-            type={show ? 'text' : 'password'}
-            value={value || ''}
-            readOnly
-            placeholder={placeholder ?? 'Not configured'}
-            className="pr-10 font-mono text-sm bg-muted/30"
-          />
-          <button
-            type="button"
-            onClick={() => setShow((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="shrink-0"
-          onClick={handleCopy}
-          disabled={!value}
-        >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────
-// StatusBadge
+// Helpers
 // ─────────────────────────────────────────────
 
 function StatusBadge({ connected }: { connected: boolean }) {
   return (
-    <div className={`flex items-center gap-1.5 text-sm font-medium ${connected ? 'text-emerald-600' : 'text-red-500'}`}>
-      {connected ? (
-        <CheckCircle2 className="w-4 h-4" />
-      ) : (
-        <XCircle className="w-4 h-4" />
-      )}
+    <div className={`flex items-center gap-1.5 text-sm font-medium ${connected ? 'text-emerald-600' : 'text-muted-foreground'}`}>
+      {connected ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
       {connected ? 'Connected' : 'Not configured'}
+    </div>
+  )
+}
+
+function SecretInput({
+  label,
+  id,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string
+  id: string
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+}) {
+  const [show, setShow] = useState(false)
+  return (
+    <div>
+      <Label htmlFor={id}>{label}</Label>
+      <div className="relative mt-1">
+        <Input
+          id={id}
+          type={show ? 'text' : 'password'}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder ?? 'Enter value…'}
+          className="pr-10 font-mono text-sm"
+        />
+        <button
+          type="button"
+          onClick={() => setShow((v) => !v)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          tabIndex={-1}
+        >
+          {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+        </button>
+      </div>
     </div>
   )
 }
@@ -160,20 +120,68 @@ const NOTIFICATION_EVENTS = [
 // SettingsPanel (main export)
 // ─────────────────────────────────────────────
 
-export function SettingsPanel({ integrationStatus, businessProfile: initialProfile }: SettingsPanelProps) {
+export function SettingsPanel({ businessProfile: initialProfile }: SettingsPanelProps) {
   const [profile, setProfile] = useState<BusinessProfile>(initialProfile)
   const [savingProfile, setSavingProfile] = useState(false)
 
-  // Notification toggles (display-only, just UI state)
+  // Integration field values
+  const [resend, setResend] = useState({ api_key: '', from_email: '', from_name: '' })
+  const [twilio, setTwilio] = useState({ account_sid: '', auth_token: '', from_number: '' })
+  const [stripe, setStripe] = useState({ secret_key: '', publishable_key: '', webhook_secret: '' })
+  const [savingResend, setSavingResend] = useState(false)
+  const [savingTwilio, setSavingTwilio] = useState(false)
+  const [savingStripe, setSavingStripe] = useState(false)
+  const [loadingIntegrations, setLoadingIntegrations] = useState(true)
+
   const [notifState, setNotifState] = useState<Record<string, { email: boolean; sms: boolean; in_app: boolean }>>(
-    () =>
-      Object.fromEntries(
-        NOTIFICATION_EVENTS.map((e) => [
-          e.type,
-          { email: true, sms: false, in_app: true },
-        ])
-      )
+    () => Object.fromEntries(NOTIFICATION_EVENTS.map((e) => [e.type, { email: true, sms: false, in_app: true }]))
   )
+
+  // Derived connected status
+  const resendConnected = !!(resend.api_key && resend.api_key !== '')
+  const twilioConnected = !!(twilio.account_sid && twilio.auth_token)
+  const stripeConnected = !!(stripe.secret_key)
+
+  useEffect(() => {
+    fetch('/api/admin/settings/integrations')
+      .then((r) => r.json())
+      .then((data) => {
+        setResend({
+          api_key:    data.resend_api_key    ?? '',
+          from_email: data.resend_from_email ?? '',
+          from_name:  data.resend_from_name  ?? '',
+        })
+        setTwilio({
+          account_sid:  data.twilio_account_sid  ?? '',
+          auth_token:   data.twilio_auth_token   ?? '',
+          from_number:  data.twilio_from_number  ?? '',
+        })
+        setStripe({
+          secret_key:      data.stripe_secret_key      ?? '',
+          publishable_key: data.stripe_publishable_key ?? '',
+          webhook_secret:  data.stripe_webhook_secret  ?? '',
+        })
+      })
+      .catch(() => toast.error('Failed to load integration settings'))
+      .finally(() => setLoadingIntegrations(false))
+  }, [])
+
+  async function saveIntegration(keys: Record<string, string>, setSaving: (v: boolean) => void, label: string) {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/admin/settings/integrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(keys),
+      })
+      if (!res.ok) throw new Error((await res.json()).error ?? 'Save failed')
+      toast.success(`${label} settings saved`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   function toggleNotif(type: string, channel: 'email' | 'sms' | 'in_app') {
     setNotifState((prev) => ({
@@ -213,116 +221,181 @@ export function SettingsPanel({ integrationStatus, businessProfile: initialProfi
           <TabsTrigger value="profile">Business Profile</TabsTrigger>
         </TabsList>
 
-        {/* Integrations Tab */}
+        {/* ── Integrations Tab ── */}
         <TabsContent value="integrations" className="space-y-6">
-          <div className="rounded-md bg-muted/40 border border-border px-4 py-3 text-sm text-muted-foreground">
-            Integration credentials are configured via environment variables. These values are read-only at runtime. Update your <code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">.env.local</code> file and restart the server to change them.
-          </div>
+          {loadingIntegrations ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-8">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading integration settings…
+            </div>
+          ) : (
+            <>
+              {/* Resend */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base">Resend</CardTitle>
+                      <CardDescription>Transactional email delivery</CardDescription>
+                    </div>
+                    <StatusBadge connected={resendConnected} />
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <SecretInput
+                    label="API Key"
+                    id="resend_api_key"
+                    value={resend.api_key}
+                    onChange={(v) => setResend((p) => ({ ...p, api_key: v }))}
+                    placeholder="re_xxxxxxxxxxxxxxxxxxxx"
+                  />
+                  <div>
+                    <Label htmlFor="resend_from_email">From Email</Label>
+                    <Input
+                      id="resend_from_email"
+                      className="mt-1"
+                      value={resend.from_email}
+                      onChange={(e) => setResend((p) => ({ ...p, from_email: e.target.value }))}
+                      placeholder="no-reply@markhamoffice.com"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="resend_from_name">From Name</Label>
+                    <Input
+                      id="resend_from_name"
+                      className="mt-1"
+                      value={resend.from_name}
+                      onChange={(e) => setResend((p) => ({ ...p, from_name: e.target.value }))}
+                      placeholder="Markham Office Services"
+                    />
+                  </div>
+                  <div className="flex justify-end pt-1">
+                    <Button
+                      size="sm"
+                      disabled={savingResend}
+                      onClick={() => saveIntegration(
+                        { resend_api_key: resend.api_key, resend_from_email: resend.from_email, resend_from_name: resend.from_name },
+                        setSavingResend,
+                        'Resend'
+                      )}
+                    >
+                      {savingResend ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Save className="w-3.5 h-3.5 mr-1.5" />}
+                      Save
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* SendGrid */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base">SendGrid</CardTitle>
-                  <CardDescription>Transactional email delivery</CardDescription>
-                </div>
-                <StatusBadge connected={integrationStatus.sendgrid} />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <MaskedInput
-                label="API Key"
-                name="sendgrid_api_key"
-                value={integrationStatus.sendgrid ? '••••••••••••••••••••••••••' : ''}
-                placeholder="SG.xxxxxxxxxxxxxxxx"
-              />
-              <MaskedInput
-                label="Verified Sender Email"
-                name="sendgrid_from_email"
-                value={integrationStatus.sendgrid ? 'noreply@markhamoffice.com' : ''}
-                placeholder="noreply@yourdomain.com"
-              />
-              <p className="text-xs text-muted-foreground">
-                Set <code className="font-mono bg-muted px-1 py-0.5 rounded">SENDGRID_API_KEY</code> and <code className="font-mono bg-muted px-1 py-0.5 rounded">SENDGRID_FROM_EMAIL</code> in your environment.
-              </p>
-            </CardContent>
-          </Card>
+              {/* Twilio */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base">Twilio</CardTitle>
+                      <CardDescription>SMS notifications</CardDescription>
+                    </div>
+                    <StatusBadge connected={twilioConnected} />
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <SecretInput
+                    label="Account SID"
+                    id="twilio_account_sid"
+                    value={twilio.account_sid}
+                    onChange={(v) => setTwilio((p) => ({ ...p, account_sid: v }))}
+                    placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  />
+                  <SecretInput
+                    label="Auth Token"
+                    id="twilio_auth_token"
+                    value={twilio.auth_token}
+                    onChange={(v) => setTwilio((p) => ({ ...p, auth_token: v }))}
+                    placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  />
+                  <div>
+                    <Label htmlFor="twilio_from_number">From Number</Label>
+                    <Input
+                      id="twilio_from_number"
+                      className="mt-1"
+                      value={twilio.from_number}
+                      onChange={(e) => setTwilio((p) => ({ ...p, from_number: e.target.value }))}
+                      placeholder="+14165551234"
+                    />
+                  </div>
+                  <div className="flex justify-end pt-1">
+                    <Button
+                      size="sm"
+                      disabled={savingTwilio}
+                      onClick={() => saveIntegration(
+                        { twilio_account_sid: twilio.account_sid, twilio_auth_token: twilio.auth_token, twilio_from_number: twilio.from_number },
+                        setSavingTwilio,
+                        'Twilio'
+                      )}
+                    >
+                      {savingTwilio ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Save className="w-3.5 h-3.5 mr-1.5" />}
+                      Save
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Twilio */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base">Twilio</CardTitle>
-                  <CardDescription>SMS notifications</CardDescription>
-                </div>
-                <StatusBadge connected={integrationStatus.twilio} />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <MaskedInput
-                label="Account SID"
-                name="twilio_account_sid"
-                value={integrationStatus.twilio ? 'AC••••••••••••••••••••••••••••••' : ''}
-                placeholder="ACxxxxxxxxxxxxxxxx"
-              />
-              <MaskedInput
-                label="Auth Token"
-                name="twilio_auth_token"
-                value={integrationStatus.twilio ? '••••••••••••••••••••••••••••••••' : ''}
-                placeholder="xxxxxxxxxxxxxxxx"
-              />
-              <MaskedInput
-                label="From Number"
-                name="twilio_from_number"
-                value={integrationStatus.twilio ? '+1416xxxxxxx' : ''}
-                placeholder="+14165551234"
-              />
-              <p className="text-xs text-muted-foreground">
-                Set <code className="font-mono bg-muted px-1 py-0.5 rounded">TWILIO_ACCOUNT_SID</code>, <code className="font-mono bg-muted px-1 py-0.5 rounded">TWILIO_AUTH_TOKEN</code>, and <code className="font-mono bg-muted px-1 py-0.5 rounded">TWILIO_FROM_NUMBER</code> in your environment.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Stripe */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-base">Stripe</CardTitle>
-                  <CardDescription>Payment processing and subscriptions</CardDescription>
-                </div>
-                <StatusBadge connected={integrationStatus.stripe} />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <MaskedInput
-                label="Publishable Key"
-                name="stripe_pub_key"
-                value={integrationStatus.stripe ? 'pk_live_••••••••••••••••••••••••' : ''}
-                placeholder="pk_live_xxxxxxxx"
-              />
-              <MaskedInput
-                label="Secret Key"
-                name="stripe_secret_key"
-                value={integrationStatus.stripe ? 'sk_live_••••••••••••••••••••••••' : ''}
-                placeholder="sk_live_xxxxxxxx"
-              />
-              <MaskedInput
-                label="Webhook Secret"
-                name="stripe_webhook_secret"
-                value={integrationStatus.stripe ? 'whsec_••••••••••••••••••••••••' : ''}
-                placeholder="whsec_xxxxxxxx"
-              />
-              <p className="text-xs text-muted-foreground">
-                Set <code className="font-mono bg-muted px-1 py-0.5 rounded">STRIPE_SECRET_KEY</code>, <code className="font-mono bg-muted px-1 py-0.5 rounded">NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</code>, and <code className="font-mono bg-muted px-1 py-0.5 rounded">STRIPE_WEBHOOK_SECRET</code> in your environment.
-              </p>
-            </CardContent>
-          </Card>
+              {/* Stripe */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base">Stripe</CardTitle>
+                      <CardDescription>Payment processing and subscriptions</CardDescription>
+                    </div>
+                    <StatusBadge connected={stripeConnected} />
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <SecretInput
+                    label="Secret Key"
+                    id="stripe_secret_key"
+                    value={stripe.secret_key}
+                    onChange={(v) => setStripe((p) => ({ ...p, secret_key: v }))}
+                    placeholder="sk_live_xxxxxxxx"
+                  />
+                  <div>
+                    <Label htmlFor="stripe_publishable_key">Publishable Key</Label>
+                    <Input
+                      id="stripe_publishable_key"
+                      className="mt-1 font-mono text-sm"
+                      value={stripe.publishable_key}
+                      onChange={(e) => setStripe((p) => ({ ...p, publishable_key: e.target.value }))}
+                      placeholder="pk_live_xxxxxxxx"
+                    />
+                  </div>
+                  <SecretInput
+                    label="Webhook Secret"
+                    id="stripe_webhook_secret"
+                    value={stripe.webhook_secret}
+                    onChange={(v) => setStripe((p) => ({ ...p, webhook_secret: v }))}
+                    placeholder="whsec_xxxxxxxx"
+                  />
+                  <div className="flex justify-end pt-1">
+                    <Button
+                      size="sm"
+                      disabled={savingStripe}
+                      onClick={() => saveIntegration(
+                        { stripe_secret_key: stripe.secret_key, stripe_publishable_key: stripe.publishable_key, stripe_webhook_secret: stripe.webhook_secret },
+                        setSavingStripe,
+                        'Stripe'
+                      )}
+                    >
+                      {savingStripe ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Save className="w-3.5 h-3.5 mr-1.5" />}
+                      Save
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </TabsContent>
 
-        {/* Notifications Tab */}
+        {/* ── Notifications Tab ── */}
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
@@ -356,14 +429,14 @@ export function SettingsPanel({ integrationStatus, businessProfile: initialProfi
                           <Switch
                             checked={notifState[event.type]?.email ?? false}
                             onCheckedChange={() => toggleNotif(event.type, 'email')}
-                            disabled={!integrationStatus.sendgrid}
+                            disabled={!resendConnected}
                           />
                         </TableCell>
                         <TableCell className="text-center">
                           <Switch
                             checked={notifState[event.type]?.sms ?? false}
                             onCheckedChange={() => toggleNotif(event.type, 'sms')}
-                            disabled={!integrationStatus.twilio}
+                            disabled={!twilioConnected}
                           />
                         </TableCell>
                       </TableRow>
@@ -371,17 +444,17 @@ export function SettingsPanel({ integrationStatus, businessProfile: initialProfi
                   </TableBody>
                 </Table>
               </div>
-              {(!integrationStatus.sendgrid || !integrationStatus.twilio) && (
+              {(!resendConnected || !twilioConnected) && (
                 <p className="text-xs text-muted-foreground mt-3">
-                  {!integrationStatus.sendgrid && 'Email notifications require SendGrid to be configured. '}
-                  {!integrationStatus.twilio && 'SMS notifications require Twilio to be configured.'}
+                  {!resendConnected && 'Email notifications require Resend to be configured. '}
+                  {!twilioConnected && 'SMS notifications require Twilio to be configured.'}
                 </p>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Business Profile Tab */}
+        {/* ── Business Profile Tab ── */}
         <TabsContent value="profile">
           <Card>
             <CardHeader>
@@ -469,7 +542,8 @@ export function SettingsPanel({ integrationStatus, businessProfile: initialProfi
               </div>
               <div className="flex justify-end pt-2">
                 <Button onClick={saveProfile} disabled={savingProfile}>
-                  {savingProfile ? 'Saving...' : 'Save Profile'}
+                  {savingProfile ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Save className="w-3.5 h-3.5 mr-1.5" />}
+                  Save Profile
                 </Button>
               </div>
             </CardContent>
