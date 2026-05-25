@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { debitCredits, getCreditHistory } from '@/lib/credits/credit-engine'
+import { sendBookingConfirmationEmail } from '@/lib/resend/sender'
 
 export async function POST(request: NextRequest) {
   try {
@@ -98,6 +99,27 @@ export async function POST(request: NextRequest) {
       message: `Your booking for ${(booking as any).room?.name ?? 'a meeting room'} has been confirmed.`,
       action_url: '/rooms',
     })
+
+    // Send confirmation email (non-fatal)
+    try {
+      const { data: userProfile } = await admin
+        .from('users')
+        .select('email, full_name')
+        .eq('id', user.id)
+        .single()
+      if (userProfile) {
+        await sendBookingConfirmationEmail({
+          to: userProfile.email,
+          fullName: userProfile.full_name ?? 'there',
+          roomName: (booking as any).room?.name ?? 'Meeting Room',
+          startTime: new Date(startTime).toLocaleString('en-CA', { timeZone: 'America/Toronto' }),
+          endTime: new Date(endTime).toLocaleString('en-CA', { timeZone: 'America/Toronto' }),
+          creditsUsed,
+        })
+      }
+    } catch (emailErr) {
+      console.error('Booking confirmation email failed:', emailErr)
+    }
 
     return NextResponse.json({ booking }, { status: 201 })
   } catch (err) {

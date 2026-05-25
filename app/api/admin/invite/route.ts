@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createStripeCustomer } from '@/lib/stripe/subscriptions'
+import { sendInviteEmail } from '@/lib/resend/sender'
 
 // POST /api/admin/invite
 // Body: { email, full_name, role: 'admin' | 'staff' | 'client', company_name? }
@@ -90,6 +91,14 @@ export async function POST(req: NextRequest) {
         // Non-fatal: Stripe customer can be created later
         console.error('Stripe customer creation failed during invite:', stripeErr)
       }
+    }
+
+    // Send branded invite email via Resend (in addition to Supabase's system invite)
+    try {
+      const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://my.markhamoffice.com'}/accept-invite`
+      await sendInviteEmail({ to: email, fullName: full_name, inviteUrl })
+    } catch (emailErr) {
+      console.error('Invite email failed:', emailErr)
     }
 
     return NextResponse.json({ success: true, userId: newUserId })
