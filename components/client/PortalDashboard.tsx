@@ -157,10 +157,10 @@ export function PortalDashboard({
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { icon: Building2, label: 'Book a Room', href: '/rooms' },
-            { icon: CreditCard, label: 'View Invoices', href: '/billing' },
-            { icon: Wrench, label: 'My Services', href: '/services' },
-            { icon: HeadphonesIcon, label: 'Get Support', href: '/support' },
+            { icon: Building2, label: 'Book a Room', href: '/client/rooms' },
+            { icon: CreditCard, label: 'View Invoices', href: '/client/billing' },
+            { icon: Wrench, label: 'My Services', href: '/client/services' },
+            { icon: HeadphonesIcon, label: 'Get Support', href: '/client/support' },
           ].map(({ icon: Icon, label, href }) => (
             <button
               key={href}
@@ -187,7 +187,7 @@ export function PortalDashboard({
               variant="ghost"
               size="sm"
               className="text-xs h-7 px-2 text-primary"
-              onClick={() => router.push('/services')}
+              onClick={() => router.push('/client/services')}
             >
               View all <ChevronRight className="h-3 w-3 ml-1" />
             </Button>
@@ -241,7 +241,7 @@ export function PortalDashboard({
             variant="ghost"
             size="sm"
             className="text-xs h-7 px-2 text-primary"
-            onClick={() => router.push('/rooms')}
+            onClick={() => router.push('/client/rooms')}
           >
             Book a room <ChevronRight className="h-3 w-3 ml-1" />
           </Button>
@@ -252,7 +252,7 @@ export function PortalDashboard({
             icon={CalendarClock}
             title="No upcoming bookings"
             description="Book a meeting room to get started."
-            action={{ label: 'Book a Room', onClick: () => router.push('/rooms') }}
+            action={{ label: 'Book a Room', onClick: () => router.push('/client/rooms') }}
             className="py-8"
           />
         ) : (
@@ -300,7 +300,7 @@ export function PortalDashboard({
               size="sm"
               variant="outline"
               className="border-amber-300 text-amber-800 hover:bg-amber-100 h-7 text-xs"
-              onClick={() => router.push('/support')}
+              onClick={() => router.push('/client/support')}
             >
               View requests
             </Button>
