@@ -50,16 +50,14 @@ export async function POST(
   const clientId = params.id
 
   try {
-    if (type === 'credit') {
-      const result = await creditCredits({ clientId, amount, reason, performedBy: user.id })
-      return NextResponse.json({ success: true, newBalance: result.newBalance })
-    } else {
-      const result = await debitCredits({ clientId, amount, reason, performedBy: user.id })
-      if (!result.success) {
-        return NextResponse.json({ error: result.error }, { status: 400 })
-      }
-      return NextResponse.json({ success: true, newBalance: result.newBalance })
+    const result = type === 'credit'
+      ? await creditCredits({ clientId, amount, reason, performedBy: user.id })
+      : await debitCredits({ clientId, amount, reason, performedBy: user.id })
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: 400 })
     }
+    return NextResponse.json({ success: true, newBalance: result.newBalance })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to update credits'
     console.error('POST /api/admin/clients/[id]/credits error:', message)
