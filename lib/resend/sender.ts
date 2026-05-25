@@ -26,10 +26,10 @@ export async function sendInviteEmail(params: {
   await resend.emails.send({
     from,
     to: params.to,
-    subject: 'You've been invited to Markham Office Services',
+    subject: "You've been invited to Markham Office Services",
     html: `
       <p>Hi ${params.fullName},</p>
-      <p>You've been invited to access the Markham Office Services client portal.</p>
+      <p>You have been invited to access the Markham Office Services client portal.</p>
       <p><a href="${params.inviteUrl}" style="background:#2563eb;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block">Accept Invitation</a></p>
       <p>This link expires in 24 hours. If you did not expect this invitation, you can safely ignore it.</p>
       <p>— Markham Office Services</p>
