@@ -84,8 +84,7 @@ export default function LoginPage() {
     const destination = DASHBOARD_MAP[role] ?? DASHBOARD_MAP.client
 
     toast.success('Welcome back!')
-    router.push(destination)
-    router.refresh()
+    window.location.href = destination
   }
 
   return (
@@ -195,6 +194,16 @@ export default function LoginPage() {
                 'Sign in'
               )}
             </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              Don&apos;t have an account?{' '}
+              <Link
+                href="/signup"
+                className="text-primary underline-offset-4 hover:underline transition-colors"
+              >
+                Sign up
+              </Link>
+            </p>
           </CardFooter>
         </form>
       </Card>

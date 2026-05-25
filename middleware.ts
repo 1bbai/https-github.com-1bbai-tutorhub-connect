@@ -9,6 +9,7 @@ const DASHBOARD_MAP: Record<string, string> = {
 
 const PUBLIC_ROUTES = [
   '/login',
+  '/signup',
   '/forgot-password',
   '/reset-password',
   '/accept-invite',
@@ -67,16 +68,22 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isPublic = isPublicRoute(pathname)
 
+  // Helper: create a redirect that carries Supabase session cookies through.
+  function redirect(url: URL) {
+    const res = NextResponse.redirect(url)
+    supabaseResponse.cookies.getAll().forEach((cookie) => res.cookies.set(cookie))
+    return res
+  }
+
   // ── Unauthenticated ──────────────────────────────────────────────────────
   if (!user) {
-    // Allow static root redirect to login
     if (pathname === '/') {
-      return NextResponse.redirect(new URL('/login', request.url))
+      return redirect(new URL('/login', request.url))
     }
     if (!isPublic) {
       const loginUrl = new URL('/login', request.url)
       loginUrl.searchParams.set('next', pathname)
-      return NextResponse.redirect(loginUrl)
+      return redirect(loginUrl)
     }
     return supabaseResponse
   }
@@ -87,7 +94,7 @@ export async function middleware(request: NextRequest) {
   if (isPublic || pathname === '/') {
     const role = await getUserRole(supabase, user.id)
     const destination = DASHBOARD_MAP[role] ?? DASHBOARD_MAP.client
-    return NextResponse.redirect(new URL(destination, request.url))
+    return redirect(new URL(destination, request.url))
   }
 
   // Role-based access control for protected sub-trees
@@ -99,20 +106,18 @@ export async function middleware(request: NextRequest) {
     const role = await getUserRole(supabase, user.id)
 
     if (pathname.startsWith('/admin') && role !== 'admin') {
-      // Non-admins go to their own dashboard
       const destination = DASHBOARD_MAP[role] ?? '/login'
-      return NextResponse.redirect(new URL(destination, request.url))
+      return redirect(new URL(destination, request.url))
     }
 
     if (pathname.startsWith('/staff') && !['admin', 'staff'].includes(role)) {
       const destination = DASHBOARD_MAP[role] ?? '/login'
-      return NextResponse.redirect(new URL(destination, request.url))
+      return redirect(new URL(destination, request.url))
     }
 
     if (pathname.startsWith('/client') && role !== 'client') {
-      // Admins and staff have their own portals — don't let them into /client
       const destination = DASHBOARD_MAP[role] ?? '/login'
-      return NextResponse.redirect(new URL(destination, request.url))
+      return redirect(new URL(destination, request.url))
     }
   }
 
