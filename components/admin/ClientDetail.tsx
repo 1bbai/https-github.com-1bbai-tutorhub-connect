@@ -73,7 +73,7 @@ interface ClientDetailProps {
     CrmContact,
     'id' | 'full_name' | 'email' | 'phone' | 'status' | 'company_name'
   > | null
-  latestCredit: CreditLedgerEntry | null
+  creditHistory: (CreditLedgerEntry & { performer: { full_name: string } | null })[]
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -106,7 +106,7 @@ export function ClientDetail({
   invoices,
   tasks,
   crmContact,
-  latestCredit,
+  creditHistory,
 }: ClientDetailProps) {
   const router = useRouter()
   const supabase = createClient()
@@ -160,47 +160,29 @@ export function ClientDetail({
   }
 
   async function handleCreditAdjust(type: 'credit' | 'debit') {
-    const amount = parseFloat(creditAmount)
-    if (!amount || amount <= 0 || !creditReason) {
+    const amount = parseInt(creditAmount, 10)
+    if (!amount || amount <= 0 || !creditReason.trim()) {
       toast.error('Enter a valid amount and reason')
       return
     }
     setCreditLoading(true)
     try {
-      const currentBalance = latestCredit?.balance_after ?? 0
-      const newBalance =
-        type === 'credit' ? currentBalance + amount : currentBalance - amount
-
-      const { error } = await supabase.from('credit_ledger').insert({
-        client_id: client.id,
-        type,
-        amount,
-        reason: creditReason,
-        balance_after: newBalance,
+      const res = await fetch(`/api/admin/clients/${client.id}/credits`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, type, reason: creditReason.trim() }),
       })
-      if (error) throw error
-
-      // Update subscription credits_remaining
-      if (subscription) {
-        await supabase
-          .from('client_subscriptions')
-          .update({
-            credits_remaining:
-              type === 'credit'
-                ? (subscription.credits_remaining ?? 0) + amount
-                : Math.max(0, (subscription.credits_remaining ?? 0) - amount),
-          })
-          .eq('id', subscription.id)
+      const json = await res.json()
+      if (!res.ok) {
+        toast.error(json.error ?? 'Failed to adjust meeting room credits')
+        return
       }
-
-      toast.success(
-        `${type === 'credit' ? 'Added' : 'Deducted'} ${amount} credits`
-      )
+      toast.success(`${type === 'credit' ? 'Added' : 'Deducted'} ${amount} meeting room credit${amount !== 1 ? 's' : ''}`)
       setCreditAmount('')
       setCreditReason('')
       router.refresh()
     } catch {
-      toast.error('Failed to adjust credits')
+      toast.error('Failed to adjust meeting room credits')
     } finally {
       setCreditLoading(false)
     }
@@ -435,10 +417,10 @@ export function ClientDetail({
             </Card>
           )}
 
-          {/* Credits card */}
+          {/* Meeting Room Credits card */}
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-semibold">Credits</CardTitle>
+              <CardTitle className="text-sm font-semibold">Meeting Room Credits</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-center">
@@ -446,12 +428,15 @@ export function ClientDetail({
                   {subscription?.credits_remaining ?? 0}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  credits remaining
+                  meeting room credits remaining
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  1 credit = 1 hour
                 </p>
               </div>
               <Separator />
               <div className="space-y-2">
-                <Label className="text-xs">Adjust Credits</Label>
+                <Label className="text-xs">Adjust Meeting Room Credits</Label>
                 <Input
                   type="number"
                   placeholder="Amount"
@@ -548,6 +533,9 @@ export function ClientDetail({
               <TabsTrigger value="tasks">
                 Tasks ({tasks.length})
               </TabsTrigger>
+              <TabsTrigger value="credits">
+                Room Credits ({creditHistory.length})
+              </TabsTrigger>
             </TabsList>
 
             {/* Services tab */}
@@ -621,7 +609,7 @@ export function ClientDetail({
                               <TableHead>Room</TableHead>
                               <TableHead>Date</TableHead>
                               <TableHead>Duration</TableHead>
-                              <TableHead>Credits</TableHead>
+                              <TableHead>Credits Used</TableHead>
                               <TableHead>Status</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -675,7 +663,7 @@ export function ClientDetail({
                               <TableHead>Room</TableHead>
                               <TableHead>Date</TableHead>
                               <TableHead>Duration</TableHead>
-                              <TableHead>Credits</TableHead>
+                              <TableHead>Credits Used</TableHead>
                               <TableHead>Status</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -840,6 +828,66 @@ export function ClientDetail({
                                     'MMM d, yyyy'
                                   )
                                 : '—'}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Credits tab */}
+            <TabsContent value="credits">
+              <Card>
+                <CardContent className="p-0">
+                  {creditHistory.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-8">
+                      No meeting room credit history yet
+                    </p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Amount</TableHead>
+                          <TableHead>Balance After</TableHead>
+                          <TableHead>Reason</TableHead>
+                          <TableHead>Performed By</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {creditHistory.map((entry) => (
+                          <TableRow key={entry.id}>
+                            <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                              {format(new Date(entry.created_at), 'MMM d, yyyy h:mm a')}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  'text-xs capitalize',
+                                  entry.type === 'credit'
+                                    ? 'text-emerald-600 border-emerald-200 bg-emerald-50'
+                                    : 'text-red-600 border-red-200 bg-red-50'
+                                )}
+                              >
+                                {entry.type === 'credit' ? '+' : '−'}{entry.amount}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-sm font-medium">
+                              {entry.amount}
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {entry.balance_after}
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
+                              {entry.reason}
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {entry.performer?.full_name ?? (entry.booking_id ? 'System (booking)' : 'System')}
                             </TableCell>
                           </TableRow>
                         ))}

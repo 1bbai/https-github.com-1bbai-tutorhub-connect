@@ -166,7 +166,7 @@ export function ClientList({ clients }: ClientListProps) {
                 <TableHead>Company</TableHead>
                 <TableHead>Plan</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Credits</TableHead>
+                <TableHead className="text-right">Room Credits</TableHead>
                 <TableHead>Joined</TableHead>
                 <TableHead className="w-10" />
               </TableRow>

@@ -28,6 +28,7 @@ export async function debitCredits(params: {
   amount: number
   reason: string
   bookingId?: string
+  performedBy?: string
 }): Promise<{ success: boolean; newBalance: number; error?: string }> {
   const supabase = createAdminClient()
 
@@ -43,45 +44,64 @@ export async function debitCredits(params: {
     return { success: false, newBalance: 0, error: fetchError.message }
   }
 
-  const current = sub?.credits_remaining ?? 0
+  if (!sub) {
+    return { success: false, newBalance: 0, error: 'Client has no active subscription.' }
+  }
 
-  // 2. Check for insufficient balance
+  const current = sub.credits_remaining ?? 0
+
   if (current < params.amount) {
     return {
       success: false,
       newBalance: current,
-      error: `Insufficient credits. Available: ${current}, Required: ${params.amount}`,
+      error: `Insufficient meeting room credits. Available: ${current}, Required: ${params.amount}`,
     }
   }
 
   const newBalance = current - params.amount
 
-  // 3. Decrement credits_remaining
+  // 2. Decrement credits_remaining (use id for precision)
   const { error: updateError } = await supabase
     .from('client_subscriptions')
-    .update({
-      credits_remaining: newBalance,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('client_id', params.clientId)
-    .eq('status', 'active')
+    .update({ credits_remaining: newBalance, updated_at: new Date().toISOString() })
+    .eq('id', sub.id)
 
   if (updateError) {
     return { success: false, newBalance: current, error: updateError.message }
   }
 
-  // 4. Insert credit_ledger row
-  const { error: ledgerError } = await supabase.from('credit_ledger').insert({
-    client_id: params.clientId,
-    booking_id: params.bookingId ?? null,
-    type: 'debit',
-    amount: params.amount,
-    reason: params.reason,
-    balance_after: newBalance,
-  })
+  // 3. Insert credit_ledger row (no performed_by — added as a non-fatal follow-up)
+  const { data: ledgerRow, error: ledgerError } = await supabase
+    .from('credit_ledger')
+    .insert({
+      client_id: params.clientId,
+      booking_id: params.bookingId ?? null,
+      type: 'debit',
+      amount: params.amount,
+      reason: params.reason,
+      balance_after: newBalance,
+    })
+    .select('id')
+    .single()
 
   if (ledgerError) {
-    console.error('credit_ledger insert failed (debit):', ledgerError.message)
+    // Roll back the subscription update to keep state consistent
+    await supabase
+      .from('client_subscriptions')
+      .update({ credits_remaining: current })
+      .eq('id', sub.id)
+    return { success: false, newBalance: current, error: `Failed to record ledger entry: ${ledgerError.message}` }
+  }
+
+  // 4. Set performed_by if provided — requires migration 003, non-fatal if not yet applied
+  if (params.performedBy && ledgerRow) {
+    const { error: auditErr } = await supabase
+      .from('credit_ledger')
+      .update({ performed_by: params.performedBy })
+      .eq('id', ledgerRow.id)
+    if (auditErr) {
+      console.warn('[debitCredits] performed_by update skipped (run migration 003):', auditErr.message)
+    }
   }
 
   // 5. Low balance notification (< 2 credits)
@@ -106,47 +126,71 @@ export async function creditCredits(params: {
   amount: number
   reason: string
   bookingId?: string
-}): Promise<{ success: boolean; newBalance: number }> {
+  performedBy?: string
+}): Promise<{ success: boolean; newBalance: number; error?: string }> {
   const supabase = createAdminClient()
 
-  // 1. Get current balance and increment
+  // 1. Get active subscription
   const { data: sub, error: fetchError } = await supabase
     .from('client_subscriptions')
-    .select('credits_remaining')
+    .select('id, credits_remaining')
     .eq('client_id', params.clientId)
+    .eq('status', 'active')
     .maybeSingle()
 
   if (fetchError) {
-    throw new Error(`Failed to fetch subscription: ${fetchError.message}`)
+    return { success: false, newBalance: 0, error: `Failed to fetch subscription: ${fetchError.message}` }
   }
 
-  const current = sub?.credits_remaining ?? 0
+  if (!sub) {
+    return { success: false, newBalance: 0, error: 'Client has no active subscription. Assign a plan before adding credits.' }
+  }
+
+  const current = sub.credits_remaining ?? 0
   const newBalance = current + params.amount
 
+  // 2. Increment credits_remaining (use id for precision)
   const { error: updateError } = await supabase
     .from('client_subscriptions')
-    .update({
-      credits_remaining: newBalance,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('client_id', params.clientId)
+    .update({ credits_remaining: newBalance, updated_at: new Date().toISOString() })
+    .eq('id', sub.id)
 
   if (updateError) {
-    throw new Error(`Failed to increment credits: ${updateError.message}`)
+    return { success: false, newBalance: current, error: `Failed to increment credits: ${updateError.message}` }
   }
 
-  // 2. Insert credit_ledger row
-  const { error: ledgerError } = await supabase.from('credit_ledger').insert({
-    client_id: params.clientId,
-    booking_id: params.bookingId ?? null,
-    type: 'credit',
-    amount: params.amount,
-    reason: params.reason,
-    balance_after: newBalance,
-  })
+  // 3. Insert credit_ledger row (no performed_by — added as a non-fatal follow-up)
+  const { data: ledgerRow, error: ledgerError } = await supabase
+    .from('credit_ledger')
+    .insert({
+      client_id: params.clientId,
+      booking_id: params.bookingId ?? null,
+      type: 'credit',
+      amount: params.amount,
+      reason: params.reason,
+      balance_after: newBalance,
+    })
+    .select('id')
+    .single()
 
   if (ledgerError) {
-    console.error('credit_ledger insert failed (credit):', ledgerError.message)
+    // Roll back the subscription update to keep state consistent
+    await supabase
+      .from('client_subscriptions')
+      .update({ credits_remaining: current })
+      .eq('id', sub.id)
+    return { success: false, newBalance: current, error: `Failed to record ledger entry: ${ledgerError.message}` }
+  }
+
+  // 4. Set performed_by if provided — requires migration 003, non-fatal if not yet applied
+  if (params.performedBy && ledgerRow) {
+    const { error: auditErr } = await supabase
+      .from('credit_ledger')
+      .update({ performed_by: params.performedBy })
+      .eq('id', ledgerRow.id)
+    if (auditErr) {
+      console.warn('[creditCredits] performed_by update skipped (run migration 003):', auditErr.message)
+    }
   }
 
   return { success: true, newBalance }

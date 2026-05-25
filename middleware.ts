@@ -75,6 +75,11 @@ export async function middleware(request: NextRequest) {
     return res
   }
 
+  // ── API routes — never redirect, let the handler decide ─────────────────
+  if (pathname.startsWith('/api/')) {
+    return supabaseResponse
+  }
+
   // ── Unauthenticated ──────────────────────────────────────────────────────
   if (!user) {
     if (pathname === '/') {

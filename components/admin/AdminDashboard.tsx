@@ -252,7 +252,7 @@ export function AdminDashboard({
                         </Badge>
                         <span className="text-xs text-muted-foreground flex items-center gap-0.5">
                           <Clock className="w-3 h-3" />
-                          {booking.credits_used} credits
+                          {booking.credits_used} meeting room credit{booking.credits_used !== 1 ? 's' : ''}
                         </span>
                       </div>
                     </div>

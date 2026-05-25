@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendWelcomeEmail } from '@/lib/resend/sender'
 
 export async function POST(req: NextRequest) {
   try {
@@ -72,6 +73,11 @@ export async function POST(req: NextRequest) {
     if (profileError) {
       console.error('[signup] Profile upsert failed:', profileError.message)
     }
+
+    // Send welcome email via Resend (non-fatal)
+    sendWelcomeEmail({ to: email.toLowerCase().trim(), fullName: full_name }).catch((err) =>
+      console.error('[signup] Welcome email failed:', err)
+    )
 
     return NextResponse.json({ success: true })
   } catch (err) {

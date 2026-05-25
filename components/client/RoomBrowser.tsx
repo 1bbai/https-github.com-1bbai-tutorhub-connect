@@ -304,7 +304,7 @@ function BookingSheet({
                   {startLabel} – {endLabel}
                 </p>
                 <p className="text-muted-foreground mt-0.5">
-                  Credits required: <strong>{creditsRequired}</strong>
+                  Meeting room credits required: <strong>{creditsRequired}</strong> (1 credit = 1 hr)
                 </p>
               </div>
             )}
@@ -349,12 +349,12 @@ function BookingSheet({
                 </div>
                 <hr className="border-border" />
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Credits to use</span>
+                  <span className="text-muted-foreground">Meeting room credits to use</span>
                   <span className="font-semibold text-primary">{creditsRequired}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Current balance</span>
-                  <span className="font-medium">{creditBalance}</span>
+                  <span className="font-medium">{creditBalance} credits</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">After booking</span>
@@ -369,7 +369,7 @@ function BookingSheet({
               <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-sm text-destructive">
                 <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>
-                  Insufficient credits. You need {Math.abs(creditsAfter)} more credit{Math.abs(creditsAfter) !== 1 ? 's' : ''}.
+                  Insufficient meeting room credits. You need {Math.abs(creditsAfter)} more meeting room credit{Math.abs(creditsAfter) !== 1 ? 's' : ''}.
                 </span>
               </div>
             )}
@@ -446,7 +446,7 @@ function CreditHistorySection({ clientId }: { clientId: string }) {
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors text-sm font-semibold text-foreground"
         onClick={handleToggle}
       >
-        Credit History
+        Meeting Room Credit History
         {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
 
@@ -458,7 +458,7 @@ function CreditHistorySection({ clientId }: { clientId: string }) {
               Loading history...
             </div>
           ) : history.length === 0 ? (
-            <p className="p-6 text-sm text-muted-foreground">No credit history yet.</p>
+            <p className="p-6 text-sm text-muted-foreground">No meeting room credit history yet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -552,7 +552,7 @@ export function RoomBrowser({
           <div className="flex items-center gap-2 text-sm">
             <CreditCard className="h-4 w-4 text-primary" />
             <span className="font-semibold text-primary">{creditBalance}</span>
-            <span className="text-muted-foreground">credits</span>
+            <span className="text-muted-foreground">meeting room credits</span>
           </div>
         </div>
 
@@ -598,7 +598,7 @@ export function RoomBrowser({
                       {room.credits_per_hour !== null && (
                         <span className="flex items-center gap-1">
                           <CreditCard className="h-3.5 w-3.5" />
-                          {room.credits_per_hour} credits/hr
+                          {room.credits_per_hour} hr credit{room.credits_per_hour !== 1 ? 's' : ''}/hr
                         </span>
                       )}
                     </div>
@@ -672,7 +672,7 @@ export function RoomBrowser({
                             {b.room?.name ?? 'Meeting Room'}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {formatDateTime(b.start_time)} &middot; {b.duration_hours}h &middot; {b.credits_used} credits
+                            {formatDateTime(b.start_time)} &middot; {b.duration_hours}h &middot; {b.credits_used} meeting room credit{b.credits_used !== 1 ? 's' : ''}
                           </p>
                         </div>
                       </div>
@@ -713,7 +713,7 @@ export function RoomBrowser({
                             {b.room?.name ?? 'Meeting Room'}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {formatDateTime(b.start_time)} &middot; {b.duration_hours}h &middot; {b.credits_used} credits
+                            {formatDateTime(b.start_time)} &middot; {b.duration_hours}h &middot; {b.credits_used} meeting room credit{b.credits_used !== 1 ? 's' : ''}
                           </p>
                         </div>
                       </div>

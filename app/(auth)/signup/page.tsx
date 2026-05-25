@@ -26,10 +26,7 @@ const signupSchema = z
     first_name: z.string().min(1, 'First name is required'),
     last_name: z.string().min(1, 'Last name is required'),
     email: z.string().min(1, 'Email is required').email('Enter a valid email address'),
-    phone: z
-      .string()
-      .min(1, 'Phone number is required')
-      .regex(/^[+\d\s\-().]{7,20}$/, 'Enter a valid phone number'),
+    phone: z.string().min(7, 'Phone number is required'),
     company_name: z.string().optional(),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     confirm_password: z.string().min(1, 'Please confirm your password'),
@@ -53,6 +50,11 @@ export default function SignupPage() {
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
   })
+
+  const onValidationError = (errs: Record<string, { message?: string }>) => {
+    const first = Object.values(errs)[0]
+    toast.error(first?.message ?? 'Please fill in all required fields correctly.')
+  }
 
   const onSubmit = async (values: SignupFormValues) => {
     try {
@@ -123,7 +125,7 @@ export default function SignupPage() {
           <CardDescription>Fill in your details to get started</CardDescription>
         </CardHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form onSubmit={handleSubmit(onSubmit, onValidationError)} noValidate>
           <CardContent className="space-y-4">
             {/* Name row */}
             <div className="grid grid-cols-2 gap-3">

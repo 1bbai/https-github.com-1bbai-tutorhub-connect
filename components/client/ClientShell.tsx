@@ -10,13 +10,13 @@ import type { User } from '@/types/database'
 import type { Notification as BellNotification } from '@/components/shared/NotificationBell'
 
 const PAGE_TITLES: Record<string, string> = {
-  '/home': 'Home',
-  '/plan': 'My Plan',
-  '/billing': 'Billing',
-  '/rooms': 'Book a Room',
-  '/services': 'My Services',
-  '/support': 'Support',
-  '/profile': 'Profile',
+  '/client/home': 'Home',
+  '/client/plan': 'My Plan',
+  '/client/billing': 'Billing',
+  '/client/rooms': 'Book a Room',
+  '/client/services': 'My Services',
+  '/client/support': 'Support',
+  '/client/profile': 'Profile',
 }
 
 function getPageTitle(pathname: string): string {
