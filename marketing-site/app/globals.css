@@ -384,7 +384,23 @@
     transform: translateY(28px);
   }
   .reveal.is-visible {
+    /* Final state set directly so content is visible even if the keyframe is
+       unavailable; the animation adds the motion on top. */
+    opacity: 1;
+    transform: translateY(0);
     animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+/* Keyframe defined in raw CSS so it is never dropped by Tailwind's purge */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
