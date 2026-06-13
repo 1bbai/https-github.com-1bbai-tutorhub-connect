@@ -43,11 +43,6 @@
     --info: 199.4 89.1% 48.4%;
     --info-foreground: 210 40% 98%;
 
-    /* Trust gold — premium marketing accent */
-    --gold: 38 92% 50%;
-    --gold-foreground: 26 83% 14%;
-    --gold-soft: 45 93% 58%;
-
     /* Brand colors — Markham Office Services blue palette */
     --brand-50: 213 100% 97%;
     --brand-100: 214 95% 93%;
@@ -103,11 +98,6 @@
     --warning-foreground: 26 83.3% 14.1%;
     --info: 199.4 89.1% 48.4%;
     --info-foreground: 222.2 84% 4.9%;
-
-    /* Trust gold — dark */
-    --gold: 41 96% 56%;
-    --gold-foreground: 26 83% 14%;
-    --gold-soft: 45 93% 64%;
 
     /* Brand colors — dark */
     --brand-50: 226 57% 21%;
@@ -322,84 +312,5 @@
     .print-only {
       display: block !important;
     }
-  }
-}
-
-/* ───────────────────────── Marketing (landing page) ───────────────────────── */
-@layer components {
-  /* Frosted glass surface */
-  .glass {
-    @apply border border-white/15 bg-white/10 backdrop-blur-xl;
-  }
-  .glass-card {
-    @apply rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl;
-  }
-
-  /* Marketing display headings use the Poppins pairing */
-  .display {
-    font-family: var(--font-display);
-    @apply font-bold tracking-tight;
-  }
-
-  /* Premium gold gradient text */
-  .text-gradient-gold {
-    @apply bg-gradient-to-r from-amber-300 via-gold to-amber-500 bg-clip-text text-transparent;
-  }
-  .text-gradient-brand {
-    @apply bg-gradient-to-r from-brand-200 via-white to-brand-200 bg-clip-text text-transparent;
-  }
-
-  /* Soft animated aurora blob used behind the hero */
-  .aurora-blob {
-    @apply pointer-events-none absolute rounded-full blur-3xl;
-    will-change: transform;
-  }
-}
-
-@layer utilities {
-  /* Subtle dotted / grid backdrop */
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, hsl(var(--brand-500) / 0.08) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--brand-500) / 0.08) 1px, transparent 1px);
-    background-size: 56px 56px;
-  }
-  .bg-dots {
-    background-image: radial-gradient(
-      hsl(var(--brand-400) / 0.25) 1px,
-      transparent 1px
-    );
-    background-size: 22px 22px;
-  }
-
-  /* Radial mask to fade a pattern out toward the edges */
-  .mask-fade {
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%);
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 40%, transparent 100%);
-  }
-
-  /* Scroll-reveal: hidden until the Reveal wrapper adds .is-visible */
-  .reveal {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-  .reveal.is-visible {
-    animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-}
-
-/* Respect users who prefer reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-  .reveal {
-    opacity: 1 !important;
-    transform: none !important;
   }
 }

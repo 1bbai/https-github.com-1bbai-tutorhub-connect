@@ -22,7 +22,6 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
-        display: ["var(--font-display)", "var(--font-sans)", ...fontFamily.sans],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -83,12 +82,6 @@ const config: Config = {
         info: {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
-        },
-        // Trust gold — premium accent for marketing CTAs and highlights
-        gold: {
-          DEFAULT: "hsl(var(--gold))",
-          foreground: "hsl(var(--gold-foreground))",
-          soft: "hsl(var(--gold-soft))",
         },
       },
       borderRadius: {
@@ -159,32 +152,6 @@ const config: Config = {
             animationTimingFunction: "cubic-bezier(0,0,0.2,1)",
           },
         },
-        // Marketing motion
-        aurora: {
-          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
-          "33%": { transform: "translate(3%, -4%) scale(1.08)" },
-          "66%": { transform: "translate(-3%, 3%) scale(0.96)" },
-        },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-14px)" },
-        },
-        "float-slow": {
-          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
-          "50%": { transform: "translateY(-22px) rotate(1.5deg)" },
-        },
-        marquee: {
-          from: { transform: "translateX(0)" },
-          to: { transform: "translateX(-50%)" },
-        },
-        "gradient-pan": {
-          "0%, 100%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-        },
-        "reveal-up": {
-          from: { opacity: "0", transform: "translateY(28px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -201,12 +168,6 @@ const config: Config = {
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         spin: "spin 1s linear infinite",
         bounce: "bounce 1s infinite",
-        aurora: "aurora 18s ease-in-out infinite",
-        float: "float 6s ease-in-out infinite",
-        "float-slow": "float-slow 9s ease-in-out infinite",
-        marquee: "marquee 38s linear infinite",
-        "gradient-pan": "gradient-pan 8s ease infinite",
-        "reveal-up": "reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
       boxShadow: {
         soft: "0 2px 8px 0 rgba(0, 0, 0, 0.06)",
