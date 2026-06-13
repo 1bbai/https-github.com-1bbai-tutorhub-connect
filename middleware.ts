@@ -82,8 +82,9 @@ export async function middleware(request: NextRequest) {
 
   // ── Unauthenticated ──────────────────────────────────────────────────────
   if (!user) {
+    // The marketing homepage is public to everyone.
     if (pathname === '/') {
-      return redirect(new URL('/login', request.url))
+      return supabaseResponse
     }
     if (!isPublic) {
       const loginUrl = new URL('/login', request.url)
@@ -95,8 +96,9 @@ export async function middleware(request: NextRequest) {
 
   // ── Authenticated ────────────────────────────────────────────────────────
 
-  // Redirect away from auth pages and root to the appropriate dashboard
-  if (isPublic || pathname === '/') {
+  // Redirect away from auth pages to the appropriate dashboard. The marketing
+  // homepage ('/') stays viewable for signed-in users too.
+  if (isPublic) {
     const role = await getUserRole(supabase, user.id)
     const destination = DASHBOARD_MAP[role] ?? DASHBOARD_MAP.client
     return redirect(new URL(destination, request.url))
