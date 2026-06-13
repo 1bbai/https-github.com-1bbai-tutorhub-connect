@@ -9,6 +9,7 @@ import { WhyUs } from '@/components/marketing/why-us'
 import { HowItWorks } from '@/components/marketing/how-it-works'
 import { Pricing } from '@/components/marketing/pricing'
 import { Testimonials } from '@/components/marketing/testimonials'
+import { Location } from '@/components/marketing/location'
 import { Contact } from '@/components/marketing/contact'
 import { Footer } from '@/components/marketing/footer'
 
@@ -53,6 +54,7 @@ export default function HomePage() {
       <HowItWorks />
       <Pricing />
       <Testimonials />
+      <Location />
       <Contact />
       <Footer />
     </main>

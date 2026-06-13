@@ -12,7 +12,7 @@ const LINKS = [
   { label: 'Services', href: '#services' },
   { label: 'Why us', href: '#why' },
   { label: 'Pricing', href: '#pricing' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Visit us', href: '#location' },
 ]
 
 export function MarketingNav() {

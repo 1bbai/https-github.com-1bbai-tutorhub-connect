@@ -38,7 +38,7 @@ export function SectionHeading({
       </span>
       <h2
         className={cn(
-          'display mt-4 text-3xl sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]',
+          'display mt-4 text-[2rem] sm:text-4xl lg:text-[3.25rem] lg:leading-[1.05]',
           tone === 'dark' ? 'text-foreground' : 'text-white'
         )}
       >
