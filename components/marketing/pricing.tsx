@@ -8,45 +8,44 @@ import { SectionHeading } from './section-heading'
 const PLANS = [
   {
     name: 'Virtual Office',
-    price: 99,
-    tagline: 'A prestige address, none of the rent.',
-    features: [
-      'Markham business address',
-      'Mail handling & scanning',
-      'Local business phone number',
-      '4 hrs meeting-room credits / mo',
-      'Member rate on day passes',
-    ],
-    cta: 'Get the address',
-  },
-  {
-    name: 'Flex Membership',
-    price: 299,
-    tagline: 'Coworking that flexes with your week.',
+    priceLabel: 'Get a quote',
+    tagline: 'A prestige address with free company registration.',
     featured: true,
     features: [
-      'Unlimited coworking access',
-      'A dedicated desk on demand',
-      '12 hrs meeting-room credits / mo',
-      'Business address & mail',
-      'Member events & community',
-      'Priority room booking',
+      'Prestigious Markham business address',
+      'Professional mail handling',
+      'Weekly mail forwarding',
+      'FREE business registration & incorporation',
+      'Member rates on meeting rooms',
+      '1 free meeting-room hour / month',
     ],
-    cta: 'Start flex membership',
+    cta: 'Start a virtual office',
   },
   {
-    name: 'Private Office',
-    price: 749,
-    tagline: 'Your own lockable, branded suite.',
+    name: 'Executive Office Suite',
+    priceLabel: 'Get a quote',
+    tagline: 'Your own furnished, move-in-ready private office.',
     features: [
-      'Furnished private office',
-      'Your name on the door',
-      '20 hrs meeting-room credits / mo',
-      'All utilities & cleaning',
-      'Reception & call answering',
-      '24/7 secure access',
+      'Furnished private office (150–300 sq ft)',
+      'Scenic Markham Civic Centre views',
+      'Reception & staff services',
+      'Conference & meeting room access',
+      'Prestige business address included',
     ],
-    cta: 'Tour a private office',
+    cta: 'Tour a suite',
+  },
+  {
+    name: 'Meeting & Conference Rooms',
+    priceLabel: 'Member rates',
+    tagline: 'The best meeting-room rate in Markham, by the hour.',
+    features: [
+      'Well-appointed boardroom',
+      'Bright, professional meeting room',
+      'Book by the hour',
+      'Member-exclusive pricing',
+      '1 free hour every month',
+    ],
+    cta: 'Book a room',
   },
 ]
 
@@ -55,14 +54,14 @@ export function Pricing() {
     <section id="pricing" className="section bg-background">
       <div className="page-container">
         <SectionHeading
-          eyebrow="Membership plans"
+          eyebrow="Plans & services"
           title={
             <>
-              Simple pricing,{' '}
-              <span className="gradient-text">everything included</span>
+              Flexible options,{' '}
+              <span className="gradient-text">real value</span>
             </>
           }
-          description="Transparent monthly rates in CAD. No setup fees, no long lock-ins — upgrade, downgrade or pause as your business grows."
+          description="Neither the cheapest nor the most expensive in Markham — just the best value for what you get. Get in touch for a quote tailored to your business."
         />
 
         <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
@@ -101,22 +100,14 @@ export function Pricing() {
                 {plan.tagline}
               </p>
 
-              <div className="mt-6 flex items-end gap-1">
+              <div className="mt-6">
                 <span
                   className={cn(
-                    'font-display text-5xl font-bold',
+                    'font-display text-3xl font-bold',
                     plan.featured ? 'text-white' : 'text-foreground'
                   )}
                 >
-                  ${plan.price}
-                </span>
-                <span
-                  className={cn(
-                    'mb-1.5 text-sm',
-                    plan.featured ? 'text-white/60' : 'text-muted-foreground'
-                  )}
-                >
-                  /month
+                  {plan.priceLabel}
                 </span>
               </div>
 
@@ -160,12 +151,19 @@ export function Pricing() {
         </div>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          Need a custom suite for a larger team?{' '}
+          Have questions about the right fit?{' '}
+          <a
+            href="tel:+19053057800"
+            className="font-semibold text-brand-600 underline-offset-4 hover:underline"
+          >
+            Call (905) 305-7800
+          </a>{' '}
+          or{' '}
           <Link
             href="/login"
             className="font-semibold text-brand-600 underline-offset-4 hover:underline"
           >
-            Talk to our team
+            sign in to the portal
           </Link>
           .
         </p>

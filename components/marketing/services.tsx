@@ -1,9 +1,9 @@
 import {
   Building2,
   CalendarClock,
-  Coffee,
+  FileCheck2,
   Headset,
-  Mails,
+  Mailbox,
   MonitorSmartphone,
   ArrowUpRight,
 } from 'lucide-react'
@@ -14,46 +14,50 @@ import { SectionHeading } from './section-heading'
 
 const SERVICES = [
   {
-    icon: Building2,
-    title: 'Private offices',
+    icon: Mailbox,
+    title: 'Virtual office',
     description:
-      'Fully furnished, lockable offices for 1–20 people. Move in with nothing but your laptop.',
+      'A prestige Markham business address with professional mail handling and weekly forwarding — work from anywhere, look established.',
     featured: true,
-    points: ['Furnished & cabled', 'Your company name on the door', 'Scale up or down monthly'],
+    points: [
+      'Prestigious business address',
+      'Mail handling & weekly forwarding',
+      'Member rates on meeting rooms',
+    ],
+  },
+  {
+    icon: Building2,
+    title: 'Executive office suites',
+    description:
+      'Fully furnished private offices from 150–300 sq ft, most with a scenic view of the Markham Civic Centre.',
+    points: ['Furnished & move-in ready'],
   },
   {
     icon: CalendarClock,
-    title: 'Meeting rooms',
+    title: 'Meeting & conference rooms',
     description:
-      'Book boardrooms and huddle spaces by the hour — instantly, from the portal.',
-    points: ['15 rooms, 2–24 seats'],
+      'Well-appointed boardroom and meeting room at the best member rate in Markham — book by the hour.',
+    points: ['1 free hour every month'],
   },
   {
-    icon: Mails,
-    title: 'Virtual office',
+    icon: FileCheck2,
+    title: 'Business registration',
     description:
-      'A prestige Markham business address with mail handling and call answering.',
-    points: ['Mail scanning & forwarding'],
+      'Register your company — from sole proprietorship to full provincial or federal incorporation. Free with a virtual office plan.',
+    points: ['FREE with virtual office'],
   },
   {
     icon: Headset,
-    title: 'Reception & admin',
+    title: 'Reception & staff services',
     description:
-      'A professional front desk greeting your guests and handling your calls.',
-    points: ['Live receptionist'],
-  },
-  {
-    icon: Coffee,
-    title: 'Coworking & day passes',
-    description:
-      'Hot desks and dedicated desks in a bright, design-led lounge. Barista coffee included.',
-    points: ['Drop in or go monthly'],
+      'An attractive, functional reception area and friendly staff to greet your guests and support your day.',
+    points: ['Professional front desk'],
   },
   {
     icon: MonitorSmartphone,
     title: 'The client portal',
     description:
-      'Bookings, billing, credits and support — all self-serve in one tidy dashboard.',
+      'Bookings, billing and support — all self-serve in one tidy dashboard, available to every member.',
     points: ['Book, pay & track in seconds'],
   },
 ]
@@ -70,7 +74,7 @@ export function Services() {
               <span className="gradient-text">under one roof</span>
             </>
           }
-          description="From a single hot desk to a full private suite — pick exactly what you need and let us run the rest."
+          description="From a prestige business address to a full private suite — pick exactly what you need and let us run the rest."
         />
 
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -152,7 +156,7 @@ export function Services() {
                     href="#contact"
                     className="mt-7 inline-flex items-center gap-1.5 self-start rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-brand-700 transition-transform hover:translate-x-0.5"
                   >
-                    Tour a private office
+                    Start a virtual office
                     <ArrowUpRight className="h-4 w-4" />
                   </a>
                 )}

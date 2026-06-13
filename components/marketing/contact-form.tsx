@@ -4,10 +4,10 @@ import { useState } from 'react'
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 
 const PLAN_OPTIONS = [
-  'Private office',
-  'Flex membership',
   'Virtual office',
-  'Meeting rooms',
+  'Executive office suite',
+  'Meeting / conference room',
+  'Business registration & incorporation',
   'Not sure yet',
 ]
 
@@ -32,7 +32,7 @@ export function ContactForm() {
     const body = encodeURIComponent(
       `Name: ${name}\nCompany: ${company}\nInterested in: ${interest}\n\n${message}`
     )
-    window.location.href = `mailto:hello@markhamoffice.com?subject=${subject}&body=${body}`
+    window.location.href = `mailto:info@markhamoffice.com?subject=${subject}&body=${body}`
     setSubmitted(true)
   }
 

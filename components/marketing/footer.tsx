@@ -5,12 +5,12 @@ import { Logo } from './logo'
 
 const COLUMNS = [
   {
-    title: 'Workspaces',
+    title: 'Services',
     links: [
-      { label: 'Private offices', href: '#workspaces' },
-      { label: 'Meeting rooms', href: '#services' },
-      { label: 'Coworking', href: '#services' },
       { label: 'Virtual office', href: '#services' },
+      { label: 'Executive suites', href: '#workspaces' },
+      { label: 'Meeting rooms', href: '#services' },
+      { label: 'Business registration', href: '#services' },
     ],
   },
   {
@@ -34,8 +34,9 @@ export function Footer() {
           <div>
             <Logo tone="light" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/55">
-              Premium serviced offices, meeting rooms and business services in
-              the heart of Markham, Ontario.
+              Virtual offices, executive suites, meeting rooms and free business
+              registration in Markham, Ontario — helping businesses start and
+              grow since 2005.
             </p>
             <a
               href="https://www.linkedin.com"
@@ -82,24 +83,24 @@ export function Footer() {
             <ul className="mt-4 space-y-3 text-sm text-white/55">
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-300" />
-                123 Enterprise Blvd, Suite 1200, Markham, ON
+                3601 Highway 7 East, Suite 1005, Markham, ON L3R 0M3
               </li>
               <li>
                 <a
-                  href="tel:+19055550142"
+                  href="tel:+19053057800"
                   className="flex items-center gap-2.5 transition-colors hover:text-white"
                 >
                   <Phone className="h-4 w-4 shrink-0 text-brand-300" />
-                  (905) 555-0142
+                  (905) 305-7800
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:hello@markhamoffice.com"
+                  href="mailto:info@markhamoffice.com"
                   className="flex items-center gap-2.5 transition-colors hover:text-white"
                 >
                   <Mail className="h-4 w-4 shrink-0 text-brand-300" />
-                  hello@markhamoffice.com
+                  info@markhamoffice.com
                 </a>
               </li>
             </ul>

@@ -1,10 +1,10 @@
 import {
   BadgeCheck,
   Clock,
+  Mailbox,
   MapPin,
   Sparkles,
   Wallet,
-  Users,
 } from 'lucide-react'
 
 import { CountUp } from './count-up'
@@ -14,41 +14,41 @@ import { SectionHeading } from './section-heading'
 const REASONS = [
   {
     icon: MapPin,
-    title: 'A prestige address',
-    body: 'Steps from Highway 404/407 and Unionville GO — easy for clients, easier for your team.',
+    title: 'A prestige Highway 7 address',
+    body: 'Central Markham at 3601 Highway 7 East, with scenic Civic Centre views and easy 404/407 access.',
   },
   {
     icon: Wallet,
-    title: 'All-inclusive, no surprises',
-    body: 'Internet, utilities, cleaning, coffee and reception are baked into one predictable price.',
+    title: 'Free business registration',
+    body: 'Register your company free of charge — sole proprietorship to full incorporation — with a virtual office plan.',
   },
   {
     icon: Clock,
-    title: 'Truly flexible terms',
-    body: 'Month-to-month agreements. Grow into a bigger suite or scale back whenever you need.',
+    title: 'Trusted since 2005',
+    body: 'Over 20 years helping Markham businesses start and grow, and a proud Markham Board of Trade member.',
   },
   {
-    icon: Users,
-    title: 'Concierge support',
-    body: 'A friendly on-site team handling guests, deliveries and the details so you can focus.',
+    icon: Mailbox,
+    title: 'Mail handled for you',
+    body: 'Professional mail handling with weekly forwarding, so nothing important ever slips through.',
   },
   {
     icon: Sparkles,
-    title: 'Tech that just works',
-    body: 'Gigabit fibre, video-ready rooms and a portal that books, bills and tracks in seconds.',
+    title: 'Fully furnished & serviced',
+    body: 'Move-in-ready suites with a well-appointed conference room, reception area and staff services.',
   },
   {
     icon: BadgeCheck,
-    title: 'A community to grow in',
-    body: 'Network with 200+ founders, consultants and teams at curated member events.',
+    title: 'Best meeting-room rates',
+    body: 'Member-exclusive rates — the best in Markham — plus one free meeting-room hour every month.',
   },
 ]
 
 const STATS = [
-  { value: 200, suffix: '+', label: 'Businesses hosted' },
-  { value: 50000, prefix: '', suffix: '+', label: 'Sq ft of workspace' },
-  { value: 98, suffix: '%', label: 'Members who renew' },
-  { value: 24, suffix: '/7', label: 'Secure access' },
+  { value: 20, suffix: '+', label: 'Years in business' },
+  { value: 300, suffix: '', label: 'Sq ft executive suites' },
+  { value: 1, suffix: '', label: 'Free meeting hour / mo' },
+  { value: 6, suffix: '', label: 'Days open weekly' },
 ]
 
 export function WhyUs() {
@@ -100,11 +100,7 @@ export function WhyUs() {
               <div key={stat.label} className="text-center">
                 <dt className="sr-only">{stat.label}</dt>
                 <dd className="font-display text-4xl font-bold text-white sm:text-5xl">
-                  <CountUp
-                    value={stat.value}
-                    prefix={stat.prefix}
-                    suffix={stat.suffix}
-                  />
+                  <CountUp value={stat.value} suffix={stat.suffix} />
                 </dd>
                 <p className="mt-2 text-sm text-white/60">{stat.label}</p>
               </div>
