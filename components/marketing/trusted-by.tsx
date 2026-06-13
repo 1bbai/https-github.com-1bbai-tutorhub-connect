@@ -1,12 +1,12 @@
 const COMPANIES = [
-  'Horizon Tech',
-  'Golden Dragon Foods',
-  'Nova Health',
-  'Maple Ridge Legal',
-  'Apex Consulting',
-  'Lakeside Realty',
-  'Quanta Labs',
-  'Northwind Capital',
+  'Virtual Offices',
+  'Executive Suites',
+  'Meeting Rooms',
+  'Free Business Registration',
+  'Mail Forwarding',
+  'Prestige Highway 7 Address',
+  'Markham Board of Trade Member',
+  'Established 2005',
 ]
 
 export function TrustedBy() {
@@ -14,7 +14,7 @@ export function TrustedBy() {
     <section className="border-y border-border bg-brand-950 py-10">
       <div className="page-container">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.28em] text-white/45">
-          Trusted by ambitious teams across the GTA
+          Everything your business needs in Markham
         </p>
 
         <div className="group relative mt-7 overflow-hidden mask-fade">

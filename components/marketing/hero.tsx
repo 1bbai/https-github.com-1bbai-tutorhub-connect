@@ -12,9 +12,9 @@ import {
 import { CountUp } from './count-up'
 
 const HERO_STATS = [
-  { value: 200, suffix: '+', label: 'Businesses hosted' },
-  { value: 15, suffix: '', label: 'Meeting rooms' },
-  { value: 4.9, decimals: 1, suffix: '/5', label: 'Client rating' },
+  { value: 20, suffix: '+', label: 'Years serving Markham' },
+  { value: 300, suffix: '', label: 'Sq ft private suites' },
+  { value: 100, suffix: '%', label: 'Furnished & serviced' },
 ]
 
 export function Hero() {
@@ -44,7 +44,7 @@ export function Hero() {
         <div className="max-w-2xl">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-white/80 backdrop-blur">
             <Sparkles className="h-3.5 w-3.5 text-gold" />
-            Premium serviced offices in the heart of Markham
+            Helping Markham businesses start &amp; grow since 2005
           </span>
 
           <h1 className="display mt-6 text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
@@ -53,9 +53,11 @@ export function Hero() {
           </h1>
 
           <p className="mt-6 text-lg leading-relaxed text-white/70">
-            Private offices, on-demand meeting rooms, and a prestige business
-            address — managed end-to-end through one effortless portal. Move in
-            today, scale on your terms.
+            A prestige Markham business address, fully-furnished executive
+            suites, and member-rate meeting rooms — plus{' '}
+            <span className="font-semibold text-white">free company
+            registration</span> when you start a virtual office. Everything you
+            need to launch and grow, in one place.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -79,11 +81,11 @@ export function Hero() {
           <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-white/65">
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="h-4 w-4 text-brand-300" />
-              Downtown Markham, ON
+              3601 Highway 7 E, Markham
             </span>
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-4 w-4 text-brand-300" />
-              Flexible month-to-month
+              Markham Board of Trade member
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="flex">
@@ -91,7 +93,7 @@ export function Hero() {
                   <Star key={i} className="h-4 w-4 fill-gold text-gold" />
                 ))}
               </span>
-              4.9 from 180+ tenants
+              Trusted since 2005
             </span>
           </div>
 
@@ -101,11 +103,7 @@ export function Hero() {
               <div key={stat.label}>
                 <dt className="sr-only">{stat.label}</dt>
                 <dd className="font-display text-3xl font-bold text-white">
-                  <CountUp
-                    value={stat.value}
-                    suffix={stat.suffix}
-                    decimals={stat.decimals ?? 0}
-                  />
+                  <CountUp value={stat.value} suffix={stat.suffix} />
                 </dd>
                 <p className="mt-1 text-xs text-white/55">{stat.label}</p>
               </div>

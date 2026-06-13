@@ -13,27 +13,27 @@ import { Contact } from '@/components/marketing/contact'
 import { Footer } from '@/components/marketing/footer'
 
 export const metadata: Metadata = {
-  title: 'Markham Office Services — Premium Serviced Offices & Meeting Rooms',
+  title: 'MarkhamOffice.com — Virtual Offices, Executive Suites & Meeting Rooms',
   description:
-    'Private offices, meeting rooms, coworking and a prestige business address in the heart of Markham, Ontario. Flexible month-to-month plans, all-inclusive pricing, managed through one effortless portal.',
+    'Prestige Markham business address, furnished executive office suites, and member-rate meeting rooms — plus FREE business registration with a virtual office. Helping Markham businesses start and grow since 2005. 3601 Highway 7 East, Markham, ON.',
   keywords: [
-    'serviced offices Markham',
-    'meeting room rental Markham',
-    'coworking Markham',
-    'virtual office Ontario',
-    'private office space',
+    'virtual office Markham',
     'business address Markham',
+    'executive office suites Markham',
+    'meeting room rental Markham',
+    'business registration Markham',
+    'company incorporation Ontario',
   ],
   metadataBase: new URL('https://markhamoffice.com'),
   robots: { index: true, follow: true },
   alternates: { canonical: 'https://markhamoffice.com' },
   openGraph: {
     type: 'website',
-    title: 'Markham Office Services — Workspaces that make your business look the part',
+    title: 'MarkhamOffice.com — Workspaces that make your business look the part',
     description:
-      'Premium serviced offices, meeting rooms and business services in Markham, Ontario. Move in today, scale on your terms.',
+      'Virtual offices, executive suites, meeting rooms and free business registration in Markham, Ontario. Trusted since 2005.',
     url: 'https://markhamoffice.com',
-    siteName: 'Markham Office Services',
+    siteName: 'MarkhamOffice.com',
   },
 }
 

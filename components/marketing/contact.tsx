@@ -7,25 +7,25 @@ const DETAILS = [
   {
     icon: MapPin,
     label: 'Visit us',
-    value: '123 Enterprise Blvd, Suite 1200\nMarkham, ON L3R 0B8',
-    href: 'https://maps.google.com/?q=Markham+Ontario',
+    value: '3601 Highway 7 East, Suite 1005\nMarkham, ON L3R 0M3',
+    href: 'https://maps.google.com/?q=3601+Highway+7+East+Suite+1005+Markham+ON+L3R+0M3',
   },
   {
     icon: Phone,
     label: 'Call us',
-    value: '(905) 555-0142',
-    href: 'tel:+19055550142',
+    value: '(905) 305-7800\nToll-free 1-855-298-4846',
+    href: 'tel:+19053057800',
   },
   {
     icon: Mail,
     label: 'Email us',
-    value: 'hello@markhamoffice.com',
-    href: 'mailto:hello@markhamoffice.com',
+    value: 'info@markhamoffice.com',
+    href: 'mailto:info@markhamoffice.com',
   },
   {
     icon: Clock,
     label: 'Office hours',
-    value: 'Mon–Fri · 8:00am – 6:00pm\n24/7 access for members',
+    value: 'Mon–Fri · 9:30am – 4:00pm\nSat · by appointment',
   },
 ]
 

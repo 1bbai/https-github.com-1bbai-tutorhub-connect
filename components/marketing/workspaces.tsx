@@ -6,25 +6,25 @@ import { SectionHeading } from './section-heading'
 
 const SPACES = [
   {
-    name: 'The Executive Suite',
-    blurb: 'Corner private office with skyline views and a dedicated meeting nook.',
-    seats: 'Up to 6',
-    size: '320 sq ft',
+    name: 'Executive Office Suite',
+    blurb: 'Fully furnished private office with a scenic view of the Markham Civic Centre.',
+    seats: '1–4 people',
+    size: '150–300 sq ft',
     gradient: 'from-brand-500 via-brand-700 to-brand-950',
     tall: true,
   },
   {
-    name: 'Boardroom No. 12',
-    blurb: 'Premium boardroom with 4K display and video-conferencing built in.',
-    seats: 'Up to 14',
-    size: '480 sq ft',
+    name: 'The Conference Room',
+    blurb: 'A well-appointed boardroom for presentations and client meetings.',
+    seats: 'Up to 10',
+    size: 'Boardroom',
     gradient: 'from-info via-brand-600 to-brand-900',
   },
   {
-    name: 'The Lounge',
-    blurb: 'Design-led coworking floor with barista bar and phone booths.',
-    seats: 'Flexible',
-    size: 'Open plan',
+    name: 'The Meeting Room',
+    blurb: 'A bright meeting room for interviews, reviews and team sessions — at the best member rate in Markham.',
+    seats: 'Up to 6',
+    size: 'Meeting room',
     gradient: 'from-brand-400 via-brand-600 to-brand-800',
   },
 ]
